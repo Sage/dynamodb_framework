@@ -22,22 +22,22 @@ class DynamoDbRepository
 
   end
 
-  def delete(key)
+  def delete(keys)
 
     params =
         {
             table_name: @table_name,
-            key: key
+            key: keys
         }
 
     dynamodb.client.delete_item(params)
 
   end
 
-  def get_by_key(hash_key, hash_value, range_key = nil, range_value = nil)
+  def get_by_key(partition_key, partition_value, range_key = nil, range_value = nil)
 
     key = {}
-    key[hash_key] = hash_value
+    key[partition_key] = partition_value
     if(range_key != nil)
       key[range_key] = range_value
     end
@@ -117,7 +117,7 @@ class DynamoDbRepository
 
   end
 
-  def query(hash_key_name, hash_key_value, range_key_name = nil, range_key_value = nil, expression = nil, expression_params = nil, index_name = nil, limit = nil, count = false)
+  def query(partition_key_name, partition_key_value, range_key_name = nil, range_key_value = nil, expression = nil, expression_params = nil, index_name = nil, limit = nil, count = false)
 
     params = {
         table_name: table_name
@@ -132,13 +132,13 @@ class DynamoDbRepository
     end
 
     if range_key_name != nil
-      params[:key_condition_expression] = '#hash_key = :hash_key and #range_key = :range_key'
-      params[:expression_attribute_names] = { '#hash_key' => hash_key_name, '#range_key' => range_key_name }
-      params[:expression_attribute_values] = { ':hash_key' => hash_key_value, ':range_key' => range_key_value }
+      params[:key_condition_expression] = '#partition_key = :partition_key and #range_key = :range_key'
+      params[:expression_attribute_names] = { '#partition_key' => partition_key_name, '#range_key' => range_key_name }
+      params[:expression_attribute_values] = { ':partition_key' => partition_key_value, ':range_key' => range_key_value }
     else
-      params[:key_condition_expression] = '#hash_key = :hash_key'
-      params[:expression_attribute_names] = { '#hash_key' => hash_key_name }
-      params[:expression_attribute_values] = { ':hash_key' => hash_key_value }
+      params[:key_condition_expression] = '#partition_key = :partition_key'
+      params[:expression_attribute_names] = { '#partition_key' => partition_key_name }
+      params[:expression_attribute_values] = { ':partition_key' => partition_key_value }
     end
 
     if expression_params != nil
