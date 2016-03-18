@@ -1,5 +1,7 @@
 require "dynamodb_framework/version"
-
-module DynamodbFramework
-  # Your code goes here...
-end
+require "dynamodb_framework/dynamodb_attributes_builder"
+require "dynamodb_framework/dynamodb_store"
+require "dynamodb_framework/dynamodb_table_manager"
+require "dynamodb_framework/dynamodb_repository"
+require "dynamodb_framework/dynamodb_migration_manager"
+require "dynamodb_framework/dynamodb_migration_script"
