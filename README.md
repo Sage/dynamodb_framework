@@ -327,7 +327,9 @@ This method is called to execute a query against an entire table bypassing any i
     count = repository.scan('#type = :type and #index > :index', { '#type' => :type, ':type' => 'list', '#index' => :index, ':index' => 2 }, nil, true)
 
 > **Notes:**
+>
 > Attribute names should be specified using Expression parameter names which should start with a #
+>
 > Attribute values should be specified using Expression parameter values which should start with a :
 
 
@@ -359,6 +361,12 @@ Query and Count from a table partition without an index:
 Query from an index partition:
 
     results = repository.query(:name, 'name 1', nil, nil, '#number > :number', { '#number' => 'number', ':number' => 2}, 'name_index')
+    
+> **Notes:**
+>
+> Attribute names should be specified using Expression parameter names which should start with a #
+>
+> Attribute values should be specified using Expression parameter values which should start with a :
    
 
 ## Development
