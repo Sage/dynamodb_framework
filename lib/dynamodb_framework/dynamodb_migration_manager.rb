@@ -10,6 +10,8 @@ class DynamoDbMigrationManager
 
   def connect
 
+    puts 'Connecting to DynamoDb instance.....'
+
     migration_table_name = 'dynamodb_migrations'
 
     #check if migration table exists
@@ -22,6 +24,8 @@ class DynamoDbMigrationManager
 
     #set the table name for the repository
     @dynamodb_repository.table_name = migration_table_name
+
+    puts 'Connected.'
 
   end
 
@@ -36,6 +40,8 @@ class DynamoDbMigrationManager
 
   def apply
 
+    puts 'Applying migration scripts.....'
+
     last_executed_script = get_last_executed_script()
 
     scripts = []
@@ -46,14 +52,19 @@ class DynamoDbMigrationManager
 
     scripts.sort { |a,b| a.timestamp <=> b.timestamp }.each do |script|
       if last_executed_script == nil || script.timestamp > last_executed_script
+        puts 'Applying script: ' + script.timestamp + '.....'
         script.apply
         @dynamodb_repository.put({ :timestamp => script.timestamp })
       end
     end
 
+    puts 'Migration scripts applied.'
+
   end
 
   def rollback
+
+    puts 'Rolling back last migration script.....'
 
     last_executed_script = get_last_executed_script()
 
@@ -70,6 +81,9 @@ class DynamoDbMigrationManager
         return
       end
     end
+
+    puts 'Completed.'
+
   end
 
 end
