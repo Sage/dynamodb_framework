@@ -15,9 +15,9 @@ RSpec.describe DynamoDbTableManager do
 
   it 'can create, check exists & drop tables' do
 
-    puts 'check if table exists:'
+    DynamodbFramework.logger.info 'check if table exists:'
     exists = subject.exists?('create_drop_test')
-    puts exists
+    DynamodbFramework.logger.info exists
 
     if exists
       subject.drop('create_drop_test')
@@ -30,9 +30,9 @@ RSpec.describe DynamoDbTableManager do
 
   it 'can create a table with a hash key and a range key' do
 
-    puts 'check if table exists:'
+    DynamodbFramework.logger.info 'check if table exists:'
     exists = subject.exists?('dual_key')
-    puts exists
+    DynamodbFramework.logger.info exists
 
     if exists
       subject.drop('dual_key')
@@ -46,9 +46,9 @@ RSpec.describe DynamoDbTableManager do
 
   it 'can create a table with a global secondary index' do
 
-    puts 'check if table exists:'
+    DynamodbFramework.logger.info 'check if table exists:'
     exists = subject.exists?('index_test')
-    puts exists
+    DynamodbFramework.logger.info exists
 
     if exists
       subject.drop('index_test')
@@ -92,9 +92,9 @@ RSpec.describe DynamoDbTableManager do
 
   it 'can update the throughput of a global secondary index' do
 
-    puts 'check if table exists:'
+    DynamodbFramework.logger.info 'check if table exists:'
     exists = subject.exists?('update_index_throughput_test')
-    puts exists
+    DynamodbFramework.logger.info exists
 
     if exists
       subject.drop('update_index_throughput_test')
@@ -119,9 +119,9 @@ RSpec.describe DynamoDbTableManager do
 
   it 'can drop an existing global secondary index' do
 
-    puts 'check if table exists:'
+    DynamodbFramework.logger.info 'check if table exists:'
     exists = subject.exists?('drop_index_test')
-    puts exists
+    DynamodbFramework.logger.info exists
 
     if exists
       subject.drop('drop_index_test')
