@@ -29,10 +29,10 @@ class DynamoDbMigrationManager
 
   end
 
-  def get_last_executed_script
+  def get_executed_scripts
     scripts = @dynamodb_repository.all()
     if scripts.length > 0
-      return scripts.sort { |a,b| b['timestamp'] <=> a['timestamp'] }[0]['timestamp']
+      return scripts.sort { |a,b| b['timestamp'] <=> a['timestamp'] }.map { |i| i['timestamp'] }
     end
 
     return nil
@@ -42,7 +42,7 @@ class DynamoDbMigrationManager
 
     puts 'Applying migration scripts.....'
 
-    last_executed_script = get_last_executed_script()
+    executed_scripts = get_executed_scripts()
 
     scripts = []
     MigrationScript.descendants.each do |ms|
@@ -51,7 +51,7 @@ class DynamoDbMigrationManager
     end
 
     scripts.sort { |a,b| a.timestamp <=> b.timestamp }.each do |script|
-      if last_executed_script == nil || script.timestamp > last_executed_script
+      if executed_scripts == nil || !executed_scripts.include?(script.timestamp)
         puts 'Applying script: ' + script.timestamp + '.....'
         script.apply
         @dynamodb_repository.put({ :timestamp => script.timestamp })
@@ -66,7 +66,7 @@ class DynamoDbMigrationManager
 
     puts 'Rolling back last migration script.....'
 
-    last_executed_script = get_last_executed_script()
+    executed_scripts = get_executed_scripts()
 
     scripts = []
     MigrationScript.descendants.each do |ms|
@@ -75,7 +75,7 @@ class DynamoDbMigrationManager
     end
 
     scripts.sort { |a,b| a.timestamp <=> b.timestamp }.each do |script|
-      if script.timestamp == last_executed_script
+      if executed_scripts != nil && executed_scripts.length > 0 && executed_scripts.include?(script.timestamp)
         script.undo
         @dynamodb_repository.delete({ :timestamp => script.timestamp })
         return
