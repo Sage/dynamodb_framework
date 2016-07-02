@@ -5,7 +5,7 @@ require 'dynamodb_framework/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "dynamodb_framework"
-  spec.version       = DynamodbFramework::VERSION
+  spec.version       = DynamoDbFramework::VERSION
   spec.authors       = ["vaughanbrittonsage"]
   spec.email         = ["vaughanbritton@gmail.com"]
 
