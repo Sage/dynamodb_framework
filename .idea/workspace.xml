@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e6e52ba6-fb1e-45c4-b31f-2a2931ecfa44" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_repository.rb" afterPath="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_repository.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_attributes_builder.rb" afterPath="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_attributes_builder.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/dynamodb_framework/version.rb" afterPath="$PROJECT_DIR$/lib/dynamodb_framework/version.rb" />
     </list>
     <ignored path="dynamodb_framework.iws" />
@@ -98,8 +98,8 @@
       <file leaf-file-name="dynamodb_attributes_builder.rb" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_attributes_builder.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="885">
-              <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
+            <state relative-caret-position="345">
+              <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -142,7 +142,6 @@
         <option value="$PROJECT_DIR$/spec/spec_helper.rb" />
         <option value="$PROJECT_DIR$/spec/test_migration_script2.rb" />
         <option value="$PROJECT_DIR$/spec/test_migration_script1.rb" />
-        <option value="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_attributes_builder.rb" />
         <option value="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_logger.rb" />
         <option value="$PROJECT_DIR$/lib/dynamodb_framework.rb" />
         <option value="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_migration_manager.rb" />
@@ -154,6 +153,7 @@
         <option value="$PROJECT_DIR$/dynamodb_framework.gemspec" />
         <option value="$PROJECT_DIR$/Gemfile" />
         <option value="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_repository.rb" />
+        <option value="$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_attributes_builder.rb" />
         <option value="$PROJECT_DIR$/lib/dynamodb_framework/version.rb" />
       </list>
     </option>
@@ -407,12 +407,12 @@
       <workItem from="1467450450242" duration="1518000" />
       <workItem from="1467452138158" duration="4809000" />
       <workItem from="1467461957536" duration="1215000" />
-      <workItem from="1467463229671" duration="1009000" />
+      <workItem from="1467463229671" duration="1257000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="11280000" />
+    <option name="totallyTimeSpent" value="11528000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="2560" height="1318" extended-state="0" />
@@ -781,14 +781,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_attributes_builder.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="885">
-          <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dynamodb_framework.gemspec">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -833,6 +825,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="770">
           <caret line="195" column="30" selection-start-line="195" selection-start-column="30" selection-end-line="195" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/dynamodb_framework/dynamodb_attributes_builder.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="17" selection-start-line="23" selection-start-column="17" selection-end-line="23" selection-end-column="17" />
           <folding />
         </state>
       </provider>
