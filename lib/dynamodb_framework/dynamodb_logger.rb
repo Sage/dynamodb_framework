@@ -3,9 +3,11 @@ require 'logger'
 module DynamoDbFramework
 
   def self.logger
-    @logger ||= Logger.new(STDOUT)
+    @@logger ||= Logger.new(STDOUT)
+  end
 
-    return @logger
+  def self.set_logger(logger)
+    @@logger = logger
   end
 
 end
