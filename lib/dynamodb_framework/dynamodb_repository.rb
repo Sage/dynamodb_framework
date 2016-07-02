@@ -191,7 +191,7 @@ module DynamoDbFramework
       hash
     end
 
-    STANDARD_TYPES = [String, Numeric, Fixnum, Integer, Float, nil, Time, Date, DateTime].freeze
+    STANDARD_TYPES = [String, Numeric, Fixnum, Integer, Float, Time, Date, DateTime].freeze
 
     def is_standard_type?(obj)
       return STANDARD_TYPES.detect { |type| obj.is_a?(type) } != nil
