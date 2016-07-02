@@ -60,9 +60,9 @@ module DynamoDbFramework
       dynamodb.client.update_table(table)
 
       # wait for table to be updated
-      puts "waiting for table: [#{table_name}] to be updated..."
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Waiting for table: [#{table_name}] to be updated."
       wait_until_active(table_name)
-      puts "table: [#{table_name}] updated!"
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Table: [#{table_name}] updated."
 
     end
 
@@ -85,9 +85,9 @@ module DynamoDbFramework
       dynamodb.client.update_table(table)
 
       # wait for table to be updated
-      puts "Adding global index: #{global_index[:index_name]}..."
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Adding global index: #{global_index[:index_name]}."
       wait_until_index_active(table_name, global_index[:index_name])
-      puts "Index added!"
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Index added."
     end
 
     def update_index_throughput(table_name, index_name, read_capacity, write_capacity)
@@ -104,13 +104,15 @@ module DynamoDbFramework
           ]
       }
 
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Updating throughput for global index: #{index_name}."
+
       dynamodb.client.update_table(table)
 
       # wait for table to be updated
-      puts "Updating throughput for global index: #{index_name}..."
-      puts "waiting for table: [#{table_name}] to be updated..."
+
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Waiting for table: [#{table_name}] to be updated."
       wait_until_active(table_name)
-      puts "table: [#{table_name}] updated!"
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Table: [#{table_name}] updated."
     end
 
     def drop_index(table_name, index_name)
@@ -126,9 +128,9 @@ module DynamoDbFramework
       dynamodb.client.update_table(table)
 
       # wait for table to be updated
-      puts "Deleting global index: #{index_name}..."
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Deleting global index: #{index_name}."
       wait_until_index_dropped(table_name, index_name)
-      puts "Index: [#{index_name}] dropped!"
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Index: [#{index_name}] dropped."
     end
 
     def get_status(table_name)
@@ -241,9 +243,9 @@ module DynamoDbFramework
       dynamodb.client.create_table(table)
 
       # wait for table to be created
-      puts "waiting for table: [#{table_name}] to be created..."
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Waiting for table: [#{table_name}] to be created."
       dynamodb.client.wait_until(:table_exists, table_name: table_name)
-      puts "table: [#{table_name}] created!"
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Table: [#{table_name}] created."
     end
 
     def create_table(options = {})
@@ -295,9 +297,9 @@ module DynamoDbFramework
       dynamodb.client.create_table(table)
 
       # wait for table to be created
-      puts "waiting for table: [#{options[:name]}] to be created..."
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Waiting for table: [#{options[:name]}] to be created."
       dynamodb.client.wait_until(:table_exists, table_name: options[:name])
-      puts "table: [#{options[:name]}] created!"
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Table: [#{options[:name]}] created."
     end
 
     def create_global_index(name, partition_key, range_key = nil, read_capacity = 20, write_capacity = 10)
@@ -330,9 +332,9 @@ module DynamoDbFramework
         return
       end
 
-      puts "dropping table: [#{table_name}] ..."
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Dropping table: [#{table_name}]."
       dynamodb.client.delete_table({ table_name: table_name })
-      puts "table: [#{table_name}] dropped!"
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Table: [#{table_name}] dropped."
     end
 
     def drop_table(table_name)
@@ -341,9 +343,9 @@ module DynamoDbFramework
         return
       end
 
-      puts "dropping table: [#{table_name}] ..."
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Dropping table: [#{table_name}]."
       dynamodb.client.delete_table({ table_name: table_name })
-      puts "table: [#{table_name}] dropped!"
+      DynamoDbFramework::LOGGER.info "[DynamoDbFramework] - Table: [#{table_name}] dropped."
     end
 
   end

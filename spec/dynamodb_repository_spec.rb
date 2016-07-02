@@ -138,7 +138,6 @@ RSpec.describe DynamoDbFramework::Repository do
       create_query_item('name 3', 1, 'query')
       create_query_item('name 3', 2, 'query')
 
-      puts 'seeded query data'
     end
 
     it 'should return all items within a partition that match a filter expression' do
@@ -193,7 +192,6 @@ RSpec.describe DynamoDbFramework::Repository do
       create_query_item('name 3', 1, 'query_index')
       create_query_item('name 3', 2, 'query_index')
 
-      puts 'seeded query_index data'
     end
 
     it 'should return all items within an index partition that match a filter expression' do
@@ -244,7 +242,6 @@ RSpec.describe DynamoDbFramework::Repository do
       create_query_item('name 3', 1, 'scan')
       create_query_item('name 3', 2, 'scan')
 
-      puts 'seeded scan data'
     end
 
     it 'should return all items from a table' do

@@ -11,7 +11,7 @@ RSpec.describe DynamoDbFramework::MigrationManager do
   end
 
   let(:migration_table_name) do
-    'dynamodb_migrations'
+    'dynamodb_framework_migrations'
   end
 
   let(:repository) do

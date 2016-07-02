@@ -45,17 +45,19 @@ module DynamoDbFramework
         key = nil
       end
 
-      @attributes.push({ :name => name, :type => type_symbol, :key => key })
+      @attributes.push({ :name => options[:name], :type => type_symbol, :key => key })
     end
 
     def add(*options)
-      if options.length == 1 && options.is_a?(Hash)
+
+      if options.length == 1 && options[0].is_a?(Hash)
         add_from_hash(options[0])
       elsif options.length == 3
         add_from_args(options[0], options[1], options[2])
       else
         add_from_args(options[0], options[1])
       end
+
     end
 
   end

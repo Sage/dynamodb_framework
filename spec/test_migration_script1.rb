@@ -9,7 +9,7 @@ class TestMigrationScript1 < DynamoDbFramework::MigrationScript
   def apply
 
     builder = DynamoDbFramework::AttributesBuilder.new
-    builder.add(:id, :S, :hash)
+    builder.add({ name: :id, type: :string, key: :hash })
     @table_manager.create_table({ name: 'test1', attributes: builder.attributes })
 
   end

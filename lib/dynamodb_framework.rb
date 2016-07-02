@@ -5,5 +5,7 @@ require_relative 'dynamodb_framework/dynamodb_table_manager'
 require_relative 'dynamodb_framework/dynamodb_repository'
 require_relative 'dynamodb_framework/dynamodb_migration_manager'
 require_relative 'dynamodb_framework/dynamodb_migration_script'
+require_relative 'dynamodb_framework/dynamodb_logger'
 
 require 'date'
+

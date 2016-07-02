@@ -61,7 +61,7 @@ module DynamoDbFramework
     def all
 
       result = dynamodb.client.scan({
-                                        :table_name => table_name
+                                        :table_name => @table_name
                                     })
 
       output = []

@@ -11,9 +11,9 @@ module DynamoDbFramework
 
     def connect
 
-      puts 'Connecting to DynamoDb instance.....'
+      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Connecting to DynamoDb instance'
 
-      migration_table_name = 'dynamodb_migrations'
+      migration_table_name = 'dynamodb_framework_migrations'
 
       #check if migration table exists
       if !@dynamodb_table_manager.exists?(migration_table_name)
@@ -26,7 +26,7 @@ module DynamoDbFramework
       #set the table name for the repository
       @dynamodb_repository.table_name = migration_table_name
 
-      puts 'Connected.'
+      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Connected.'
 
     end
 
@@ -41,7 +41,7 @@ module DynamoDbFramework
 
     def apply
 
-      puts 'Applying migration scripts.....'
+      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Applying migration scripts'
 
       executed_scripts = get_executed_scripts()
 
@@ -53,19 +53,19 @@ module DynamoDbFramework
 
       scripts.sort { |a,b| a.timestamp <=> b.timestamp }.each do |script|
         if executed_scripts == nil || !executed_scripts.include?(script.timestamp)
-          puts 'Applying script: ' + script.timestamp + '.....'
+          DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Applying script: ' + script.timestamp + '.....'
           script.apply
           @dynamodb_repository.put({ :timestamp => script.timestamp })
         end
       end
 
-      puts 'Migration scripts applied.'
+      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Migration scripts applied.'
 
     end
 
     def rollback
 
-      puts 'Rolling back last migration script.....'
+      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Rolling back started.'
 
       executed_scripts = get_executed_scripts()
 
@@ -83,7 +83,7 @@ module DynamoDbFramework
         end
       end
 
-      puts 'Completed.'
+      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Rollback complete.'
 
     end
 
