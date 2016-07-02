@@ -2,6 +2,10 @@ require 'logger'
 
 module DynamoDbFramework
 
-  LOGGER = Logger.new(STDOUT)
+  def self.logger
+    @logger ||= Logger.new(STDOUT)
+
+    return @logger
+  end
 
 end

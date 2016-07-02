@@ -11,7 +11,7 @@ module DynamoDbFramework
 
     def connect
 
-      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Connecting to DynamoDb instance'
+      DynamoDbFramework.logger.info '[DynamoDbFramework] - Connecting to DynamoDb instance'
 
       migration_table_name = 'dynamodb_framework_migrations'
 
@@ -26,7 +26,7 @@ module DynamoDbFramework
       #set the table name for the repository
       @dynamodb_repository.table_name = migration_table_name
 
-      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Connected.'
+      DynamoDbFramework.logger.info '[DynamoDbFramework] - Connected.'
 
     end
 
@@ -41,7 +41,7 @@ module DynamoDbFramework
 
     def apply
 
-      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Applying migration scripts'
+      DynamoDbFramework.logger.info '[DynamoDbFramework] - Applying migration scripts'
 
       executed_scripts = get_executed_scripts()
 
@@ -53,19 +53,19 @@ module DynamoDbFramework
 
       scripts.sort { |a,b| a.timestamp <=> b.timestamp }.each do |script|
         if executed_scripts == nil || !executed_scripts.include?(script.timestamp)
-          DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Applying script: ' + script.timestamp + '.....'
+          DynamoDbFramework.logger.info '[DynamoDbFramework] - Applying script: ' + script.timestamp + '.....'
           script.apply
           @dynamodb_repository.put({ :timestamp => script.timestamp })
         end
       end
 
-      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Migration scripts applied.'
+      DynamoDbFramework.logger.info '[DynamoDbFramework] - Migration scripts applied.'
 
     end
 
     def rollback
 
-      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Rolling back started.'
+      DynamoDbFramework.logger.info '[DynamoDbFramework] - Rolling back started.'
 
       executed_scripts = get_executed_scripts()
 
@@ -83,7 +83,7 @@ module DynamoDbFramework
         end
       end
 
-      DynamoDbFramework::LOGGER.info '[DynamoDbFramework] - Rollback complete.'
+      DynamoDbFramework.logger.info '[DynamoDbFramework] - Rollback complete.'
 
     end
 
