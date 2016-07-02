@@ -37,7 +37,7 @@ module DynamoDbFramework
         type_symbol = :BOOL
       end
 
-      if options[:key] == 'hash' || options[:key] == :hash
+      if options[:key] == 'hash' || options[:key] == :hash || options[:key] == 'partition' || options[:key] == :partition
         key = :hash
       elsif options[:key] == 'range' || options[:key] == :range
         key = :range
