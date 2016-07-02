@@ -1,22 +1,22 @@
-class TestMigrationScript2 < MigrationScript
+class TestMigrationScript2 < DynamoDbFramework::MigrationScript
 
   def initialize
     @timestamp = '20160318110730'
+    @store = DynamoDbFramework::Store.new({ endpoint: 'http://localhost:8000', aws_region: 'eu-west-1' })
+    @table_manager = DynamoDbFramework::TableManager.new(@store)
   end
 
   def apply
 
-    table_manager = DynamoDbTableManager.new
-    builder = DynamoDbAttributesBuilder.new
+    builder = DynamoDbFramework::AttributesBuilder.new
     builder.add(:id, :S)
-    table_manager.create('test2', builder.attributes, :id)
+    @table_manager.create('test2', builder.attributes, :id)
 
   end
 
   def undo
 
-    table_manager = DynamoDbTableManager.new
-    table_manager.drop('test2')
+    @table_manager.drop('test2')
 
   end
 

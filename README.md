@@ -25,7 +25,7 @@ To create or modify a DynamoDb instance you first need to create a migration scr
 
 **Example**
 
-    class CreateEventTrackingTableScript < MigrationScript
+    class CreateEventTrackingTableScript < DynamoDbFramework::MigrationScript
 
 		def initialize
 			#set the timestamp for when this script was created
@@ -34,9 +34,9 @@ To create or modify a DynamoDb instance you first need to create a migration scr
 
 		def apply
 			#create an instance of the table manager
-			manager = DynamoDbTableManager.new
+			manager = DynamoDbFramework::TableManager.new
 			#create an attribute builder
-			builder = DynamoDbAttributesBuilder.new
+			builder = DynamoDbFramework::AttributesBuilder.new
 
 			#set the hash key attribute
 			builder.add(:type, :S)			
@@ -47,7 +47,7 @@ To create or modify a DynamoDb instance you first need to create a migration scr
 		def undo
 		
 			#create an instance of the table manager
-			manager = DynamoDbTableManager.new
+			manager = DynamoDbFramework::TableManager.new
 
 			#drop the table
 			manager.drop('event_tracking')
@@ -75,7 +75,7 @@ This method is called to connect the manager to the DynamoDb instance. If the mi
 
 **Example**
 
-    manager = DynamoDbMigrationManager.new
+    manager = DynamoDbFramework::MigrationManager.new
     manager.connect
 
 ### #apply
@@ -92,7 +92,7 @@ This method is called to rollback the last migration script that was executed ag
     #rollback the last migration script
     manager.rollback
 
-# DynamoDbTableManager
+# DynamoDbFramework::TableManager
 
 This manager object provides the following methods for managing tables within a DynamoDb instance.
 
@@ -103,7 +103,7 @@ This method is called to create a table within DynamoDb.
 **Params**
 
  - **table_name** [String] [Required] This is used to specify the name of the table to create. (Must be unique within the DynamoDb instance).
- - **attributes** [Hash] [Required] This is used to specify the attributes used by the keys and indexes. (Use the DynamoDbAttributesBuilder to create attributes)
+ - **attributes** [Hash] [Required] This is used to specify the attributes used by the keys and indexes. (Use the DynamoDbFramework::AttributesBuilder to create attributes)
  - **partition_key** [Symbol] [Required] This is the document attribute that will be used as the partition key of this table.
  - **range_key** [Symbol / nil] [Optional] This is the document attribute that will be used as the range key for this table.
  - **read_capacity** [Number] [Default=20] This is the read throughput required for this table.
@@ -115,7 +115,7 @@ This method is called to create a table within DynamoDb.
 Table with partition key, no range key and no indexes:
 
     #create an attribute builder
-	builder = DynamoDbAttributesBuilder.new
+	builder = DynamoDbFramework::AttributesBuilder.new
 
 	#set the partition key attribute
 	builder.add(:type, :S)		
@@ -126,7 +126,7 @@ Table with partition key, no range key and no indexes:
 Table with partition key, range key and no indexes:
 
     #create an attribute builder
-	builder = DynamoDbAttributesBuilder.new
+	builder = DynamoDbFramework::AttributesBuilder.new
 
 	#set the partition key attribute
 	builder.add(:type, :S)	
@@ -139,7 +139,7 @@ Table with partition key, range key and no indexes:
 Table with a global index:
 
     #create an attribute builder
-	builder = DynamoDbAttributesBuilder.new
+	builder = DynamoDbFramework::AttributesBuilder.new
 
 	#set the partition key attribute
 	builder.add(:id, :S)		
@@ -181,13 +181,13 @@ This method is called to add an index to an existing table.
 **Params**
 
  - **table_name** [String] [Required] This is the name of the index. (Must be unique within the scope of the table)
- - **attributes** [Hash] [Required] This is the document attributes used by the table keys and index keys. (Use the DynamoDbAttributesBuilder to create the attributes hash.)
+ - **attributes** [Hash] [Required] This is the document attributes used by the table keys and index keys. (Use the DynamoDbFramework::AttributesBuilder to create the attributes hash.)
  - **global_index** [Hash] [Required] This is the global index to add to the table. (Use the ***#create_global_index*** method to create the global index hash.)
  
 **Example**
 
 	#build the attributes hash
-	builder = DynamoDbAttributesBuilder.new
+	builder = DynamoDbFramework::AttributesBuilder.new
 	#add the attribute for the tables partition key & range key (if range key required)
 	builder.add(:id, :S)
 	#add the attributes for the index partition key and range key (if required)
@@ -237,7 +237,7 @@ This method is called to check if an index exists on a table within the database
     => true
 
 
-# DynamoDbRepository
+# DynamoDbFramework::Repository
 
 This is a base repository that exposes core functionality for interacting with a DynamoDb table. It is intended to be wrapped inside of a table specific repository, and is only provided to give a common way of interacting with a DynamoDb table.
 

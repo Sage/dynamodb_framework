@@ -1,11 +1,28 @@
 require 'spec_helper'
 
-RSpec.describe DynamoDbMigrationManager do
+RSpec.describe DynamoDbFramework::MigrationManager do
 
-  table_manager = DynamoDbTableManager.new
-  migration_table_name = 'dynamodb_migrations'
-  repository = DynamoDbRepository.new
-  repository.table_name = migration_table_name
+  let(:store) do
+    DynamoDbFramework::Store.new({ endpoint: 'http://localhost:8000', aws_region: 'eu-west-1' })
+  end
+
+  let(:table_manager) do
+    DynamoDbFramework::TableManager.new(store)
+  end
+
+  let(:migration_table_name) do
+    'dynamodb_migrations'
+  end
+
+  let(:repository) do
+    repository = DynamoDbFramework::Repository.new(store)
+    repository.table_name = migration_table_name
+    repository
+  end
+
+  subject do
+    DynamoDbFramework::MigrationManager.new(store)
+  end
 
   context '#connect' do
 
@@ -22,7 +39,7 @@ RSpec.describe DynamoDbMigrationManager do
     it 'should connect when migration table already exists' do
 
       if !table_manager.exists?(migration_table_name)
-        builder = DynamoDbAttributesBuilder.new
+        builder = DynamoDbFramework::AttributesBuilder.new
         builder.add(:id, :S)
         table_manager.create(migration_table_name, builder.attributes, :id)
       end

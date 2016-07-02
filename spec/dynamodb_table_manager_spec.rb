@@ -1,11 +1,19 @@
 require 'spec_helper'
 
-RSpec.describe DynamoDbTableManager do
+RSpec.describe DynamoDbFramework::TableManager do
 
-  attributes_builder = DynamoDbAttributesBuilder.new
+  let(:store) do
+    DynamoDbFramework::Store.new({ endpoint: 'http://localhost:8000', aws_region: 'eu-west-1' })
+  end
+
+  subject do
+    DynamoDbFramework::TableManager.new(store)
+  end
+
+  attributes_builder = DynamoDbFramework::AttributesBuilder.new
 
   before do
-    attributes_builder = DynamoDbAttributesBuilder.new
+    attributes_builder = DynamoDbFramework::AttributesBuilder.new
     attributes_builder.add(:id, :S)
 
     subject.create('update_throughput', attributes_builder.attributes, :id)
@@ -58,7 +66,7 @@ RSpec.describe DynamoDbTableManager do
     index1 = subject.create_global_index('index1', :name, :number)
     global_indexes.push(index1)
 
-    builder = DynamoDbAttributesBuilder.new
+    builder = DynamoDbFramework::AttributesBuilder.new
     builder.add(:id, :S)
     builder.add(:name, :S)
     builder.add(:number, :N)
@@ -77,7 +85,7 @@ RSpec.describe DynamoDbTableManager do
 
   it 'can add a global index to an existing table' do
 
-    builder = DynamoDbAttributesBuilder.new
+    builder = DynamoDbFramework::AttributesBuilder.new
     builder.add(:id, :S)
     builder.add(:name, :S)
 
@@ -104,7 +112,7 @@ RSpec.describe DynamoDbTableManager do
     index1 = subject.create_global_index('index1', :name, :number)
     global_indexes.push(index1)
 
-    builder = DynamoDbAttributesBuilder.new
+    builder = DynamoDbFramework::AttributesBuilder.new
     builder.add(:id, :S)
     builder.add(:name, :S)
     builder.add(:number, :N)
@@ -131,7 +139,7 @@ RSpec.describe DynamoDbTableManager do
     index1 = subject.create_global_index('index1', :name, :number)
     global_indexes.push(index1)
 
-    builder = DynamoDbAttributesBuilder.new
+    builder = DynamoDbFramework::AttributesBuilder.new
     builder.add(:id, :S)
     builder.add(:name, :S)
     builder.add(:number, :N)

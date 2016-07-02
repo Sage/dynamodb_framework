@@ -1,16 +1,25 @@
-class DynamoDbStore
-  attr_reader :client
+module DynamoDbFramework
+  class Store
+    attr_reader :client
 
-  def initialize
-    region = ENV['DYNAMODB_REGION']
-    endpoint = ENV['DYNAMODB_ENDPOINT']
-    secret = ENV['DYNAMODB_SECRET']
-    key = ENV['DYNAMODB_ACCESS_KEY']
-    if endpoint != nil
-      @client = Aws::DynamoDB::Client.new(region: region, endpoint: endpoint, secret_access_key: secret, access_key_id: key)
-    else
-      @client = Aws::DynamoDB::Client.new(region: region, secret_access_key: secret, access_key_id: key)
+    def initialize(options = {})
+=begin
+      if options.has_key?(:endpoint)
+        @client = Aws::DynamoDB::Client.new(region: options[:aws_region], endpoint: options[:endpoint], secret_access_key: options[:aws_secret], access_key_id: options[:aws_key])
+      elsif options.has_key?(:aws_secret)
+        @client = Aws::DynamoDB::Client.new(region: options[:aws_region], secret_access_key: options[:aws_secret], access_key_id: options[:aws_key])
+      else
+        @client = Aws::DynamoDB::Client.new
+      end
+=end
+
+      if options.has_key?(:endpoint)
+        @client = Aws::DynamoDB::Client.new(region: options[:aws_region], endpoint: options[:endpoint])
+      else
+        @client = Aws::DynamoDB::Client.new
+      end
+
     end
-  end
 
+  end
 end
