@@ -2,7 +2,7 @@ class TestMigrationScript2 < DynamoDbFramework::MigrationScript
 
   def initialize
     @timestamp = '20160318110730'
-    @store = DynamoDbFramework::Store.new({ endpoint: 'http://localhost:8000', aws_region: 'eu-west-1' })
+    @store = DynamoDbFramework::Store.new({ endpoint: DYNAMODB_STORE_ENDPOINT, aws_region: 'eu-west-1' })
     @table_manager = DynamoDbFramework::TableManager.new(@store)
   end
 
