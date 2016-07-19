@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe DynamoDbFramework::MigrationManager do
 
   let(:store) do
-    DynamoDbFramework::Store.new({ endpoint: 'http://localhost:8000', aws_region: 'eu-west-1' })
+    DynamoDbFramework::Store.new({ endpoint: DYNAMODB_STORE_ENDPOINT, aws_region: 'eu-west-1' })
   end
 
   let(:table_manager) do

@@ -1,4 +1,5 @@
 require 'date'
+require 'hash_kit'
 
 module DynamoDbFramework
   class Repository
@@ -185,36 +186,8 @@ module DynamoDbFramework
 
     private
 
-    def to_hashb(obj)
-      hash = {}
-      obj.instance_variables.each {|var| hash[var.to_s.delete("@")] = obj.instance_variable_get(var) }
-      hash
-    end
-
-    STANDARD_TYPES = [String, Numeric, Fixnum, Integer, Float, Time, Date, DateTime].freeze
-
-    def is_standard_type?(obj)
-      return STANDARD_TYPES.detect { |type| obj.is_a?(type) } != nil
-    end
-
     def to_hash(obj)
-      if obj.is_a?(Hash)
-        return obj
-      end
-
-      hash = {}
-      obj.instance_variables.each do |var|
-        value = obj.instance_variable_get(var)
-        if value.is_a?(Array)
-          hash[var.to_s.delete("@")] = value.collect { |i| to_hash(i) }
-        elsif !is_standard_type?(value)
-          hash[var.to_s.delete("@")] = to_hash(value)
-        else
-          hash[var.to_s.delete("@")] = value
-        end
-      end
-      hash
+      HashKit::Helper.new.to_hash(obj)
     end
-
   end
 end
