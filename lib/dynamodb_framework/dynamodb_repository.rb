@@ -187,7 +187,11 @@ module DynamoDbFramework
     private
 
     def to_hash(obj)
-      HashKit::Helper.new.to_hash(obj)
+      hash_helper.to_hash(obj)
+    end
+
+    def hash_helper
+      @hash_helper ||= HashHelper.new
     end
   end
 end
