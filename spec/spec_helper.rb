@@ -23,3 +23,5 @@ RSpec.configure do |config|
 
   config.order = :defined
 end
+
+DynamoDbFramework.logger.level = Logger::ERROR
