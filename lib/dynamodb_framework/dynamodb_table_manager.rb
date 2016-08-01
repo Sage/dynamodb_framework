@@ -60,9 +60,9 @@ module DynamoDbFramework
       dynamodb.client.update_table(table)
 
       # wait for table to be updated
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Waiting for table: [#{table_name}] to be updated."
+      DynamoDbFramework.logger.info "[#{self.class}] -Waiting for table: [#{table_name}] to be updated."
       wait_until_active(table_name)
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Table: [#{table_name}] updated."
+      DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
 
     end
 
@@ -85,9 +85,9 @@ module DynamoDbFramework
       dynamodb.client.update_table(table)
 
       # wait for table to be updated
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Adding global index: #{global_index[:index_name]}."
+      DynamoDbFramework.logger.info "[#{self.class}] -Adding global index: #{global_index[:index_name]}."
       wait_until_index_active(table_name, global_index[:index_name])
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Index added."
+      DynamoDbFramework.logger.info "[#{self.class}] -Index added."
     end
 
     def update_index_throughput(table_name, index_name, read_capacity, write_capacity)
@@ -104,15 +104,15 @@ module DynamoDbFramework
           ]
       }
 
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Updating throughput for global index: #{index_name}."
+      DynamoDbFramework.logger.info "[#{self.class}] -Updating throughput for global index: #{index_name}."
 
       dynamodb.client.update_table(table)
 
       # wait for table to be updated
 
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Waiting for table: [#{table_name}] to be updated."
+      DynamoDbFramework.logger.info "[#{self.class}] -Waiting for table: [#{table_name}] to be updated."
       wait_until_active(table_name)
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Table: [#{table_name}] updated."
+      DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
     end
 
     def drop_index(table_name, index_name)
@@ -128,9 +128,9 @@ module DynamoDbFramework
       dynamodb.client.update_table(table)
 
       # wait for table to be updated
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Deleting global index: #{index_name}."
+      DynamoDbFramework.logger.info "[#{self.class}] -Deleting global index: #{index_name}."
       wait_until_index_dropped(table_name, index_name)
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Index: [#{index_name}] dropped."
+      DynamoDbFramework.logger.info "[#{self.class}] -Index: [#{index_name}] dropped."
     end
 
     def get_status(table_name)
@@ -243,15 +243,20 @@ module DynamoDbFramework
       dynamodb.client.create_table(table)
 
       # wait for table to be created
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Waiting for table: [#{table_name}] to be created."
+      DynamoDbFramework.logger.info "[#{self.class}] -Waiting for table: [#{table_name}] to be created."
       dynamodb.client.wait_until(:table_exists, table_name: table_name)
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Table: [#{table_name}] created."
+      DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] created."
     end
 
     def create_table(options = {})
 
       if options[:name] == nil
         raise 'A valid table name must be specified.'
+      end
+
+      table_name = options[:name]
+      if options[:namespace] != nil
+        table_name = "#{options[:namespace]}.#{options[:name]}"
       end
 
       if exists?(options[:name])
@@ -281,7 +286,7 @@ module DynamoDbFramework
       end
 
       table = {
-          :table_name => options[:name],
+          :table_name => table_name,
           :attribute_definitions => attribute_definitions,
           :key_schema => key_schema,
           :provisioned_throughput => {
@@ -297,9 +302,9 @@ module DynamoDbFramework
       dynamodb.client.create_table(table)
 
       # wait for table to be created
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Waiting for table: [#{options[:name]}] to be created."
-      dynamodb.client.wait_until(:table_exists, table_name: options[:name])
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Table: [#{options[:name]}] created."
+      DynamoDbFramework.logger.info "[#{self.class}] - Waiting for table: [#{table_name}] to be created."
+      dynamodb.client.wait_until(:table_exists, table_name: table_name)
+      DynamoDbFramework.logger.info "[#{self.class}] - Table: [#{table_name}] created."
     end
 
     def create_global_index(name, partition_key, range_key = nil, read_capacity = 20, write_capacity = 10)
@@ -332,9 +337,9 @@ module DynamoDbFramework
         return
       end
 
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Dropping table: [#{table_name}]."
+      DynamoDbFramework.logger.info "[#{self.class}] -Dropping table: [#{table_name}]."
       dynamodb.client.delete_table({ table_name: table_name })
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Table: [#{table_name}] dropped."
+      DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] dropped."
     end
 
     def drop_table(table_name)
@@ -343,9 +348,9 @@ module DynamoDbFramework
         return
       end
 
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Dropping table: [#{table_name}]."
+      DynamoDbFramework.logger.info "[#{self.class}] -Dropping table: [#{table_name}]."
       dynamodb.client.delete_table({ table_name: table_name })
-      DynamoDbFramework.logger.info "[DynamoDbFramework] - Table: [#{table_name}] dropped."
+      DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] dropped."
     end
 
   end

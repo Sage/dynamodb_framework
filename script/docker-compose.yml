@@ -1,5 +1,5 @@
 dynamodb:
-  image: codeguru/dynamodb:local
-  container_name: dynamodb
+  image: codeguru/dynamodb:1.0.0
+  command: -port 8000
   ports:
     - "8000:8000"

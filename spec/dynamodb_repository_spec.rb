@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'byebug'
 
 RSpec.describe DynamoDbFramework::Repository do
   let(:store) do
@@ -135,10 +134,10 @@ RSpec.describe DynamoDbFramework::Repository do
       schema_manager.drop('query')
 
       attributes_builder = DynamoDbFramework::AttributesBuilder.new
-      attributes_builder.add(:name, :S)
-      attributes_builder.add(:number, :N)
+      attributes_builder.add(:name, :S, :partition)
+      attributes_builder.add(:id, :S, :range)
 
-      schema_manager.create('query', attributes_builder.attributes, :name, :number)
+      schema_manager.create_table(name: 'query', attributes: attributes_builder.attributes)
 
 
       create_query_item('name 1', 1, 'query')

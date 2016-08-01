@@ -8,4 +8,7 @@
 /spec/reports/
 /tmp/
 .DS_Store*
+.idea/*
 .idea
+pkg
+
