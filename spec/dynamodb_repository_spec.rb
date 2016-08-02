@@ -59,10 +59,25 @@ RSpec.describe DynamoDbFramework::Repository do
 
         stored_item = subject.get_by_key('id', id)
 
-        expect(stored_item['id'       ]).to eq(id       )
-        expect(stored_item['name'     ]).to eq(name     )
+        expect(stored_item['id']).to eq(id)
+        expect(stored_item['name']).to eq(name)
         expect(stored_item['timestamp']).to eq(timestamp)
-        expect(stored_item['number'   ]).to eq(number   )
+        expect(stored_item['number']).to eq(number)
+      end
+    end
+
+    context 'when one of the entity values is an empty string' do
+      let(:name) { '' }
+
+      it 'does not raise an error' do
+        expect { subject.put(item) }.to_not raise_error
+
+        stored_item = subject.get_by_key('id', id)
+
+        expect(stored_item['id']).to eq(id)
+        expect(stored_item['name']).to eq(nil)
+        expect(stored_item['timestamp']).to eq(timestamp)
+        expect(stored_item['number']).to eq(number)
       end
     end
 

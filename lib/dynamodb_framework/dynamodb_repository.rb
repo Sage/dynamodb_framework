@@ -15,6 +15,8 @@ module DynamoDbFramework
 
       hash = to_hash(item)
 
+      clean_hash(hash)
+
       params =
           {
               table_name: @table_name,
@@ -192,6 +194,16 @@ module DynamoDbFramework
 
     def hash_helper
       @hash_helper ||= HashHelper.new
+    end
+
+    def clean_hash(hash)
+      hash.each do |key, value|
+        if value == ''
+          hash[key] = nil
+        elsif value.is_a?(Hash)
+          clean_hash(value)
+        end
+      end
     end
   end
 end
