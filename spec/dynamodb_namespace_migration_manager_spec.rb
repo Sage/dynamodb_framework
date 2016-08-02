@@ -11,7 +11,7 @@ RSpec.describe DynamoDbFramework::Namespace::MigrationManager do
   end
 
   let(:migration_table_name) do
-    'dynamodb_framework_migrations'
+    'dynamodb_framework_migration_history'
   end
 
   let(:repository) do
@@ -21,7 +21,7 @@ RSpec.describe DynamoDbFramework::Namespace::MigrationManager do
   end
 
   subject do
-    DynamoDbFramework::MigrationManager.new(store)
+    DynamoDbFramework::Namespace::MigrationManager.new(store)
   end
 
   context '#connect' do
@@ -60,7 +60,7 @@ RSpec.describe DynamoDbFramework::Namespace::MigrationManager do
 
       subject.connect()
 
-      subject.apply()
+      subject.apply('test_namespace')
 
       expect(table_manager.exists?('test1')).to eq(true)
       expect(table_manager.exists?('test2')).to eq(true)
@@ -83,13 +83,13 @@ RSpec.describe DynamoDbFramework::Namespace::MigrationManager do
       script1.apply()
 
       expect(table_manager.exists?('test1')).to eq(true)
-      repository.put({ :timestamp => script1.timestamp })
+      repository.put({ :timestamp => script1.timestamp, :namespace => script1.namespace })
       records = repository.all()
       expect(records.length).to eq(1)
       expect(records[0]['timestamp']).to eq('20160318110710')
 
       #run migration apply
-      subject.apply()
+      subject.apply('test_namespace')
 
       #verify that script2 has been ran
       records = repository.all()
@@ -112,13 +112,13 @@ RSpec.describe DynamoDbFramework::Namespace::MigrationManager do
       script1.apply()
 
       expect(table_manager.exists?('test1')).to eq(true)
-      repository.put({ :timestamp => script1.timestamp })
+      repository.put({ :timestamp => script1.timestamp, :namespace => script1.namespace })
       records = repository.all()
       expect(records.length).to eq(1)
       expect(records[0]['timestamp']).to eq('20160318110710')
 
       #execute a rollback
-      subject.rollback()
+      subject.rollback('test_namespace')
 
       #verify that the test1 table has been removed as part of the rollback
       expect(table_manager.exists?('test1')).to eq(false)

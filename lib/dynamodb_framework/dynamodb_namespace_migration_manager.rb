@@ -32,8 +32,8 @@ module DynamoDbFramework
 
       end
 
-      def get_executed_scripts
-        scripts = @dynamodb_repository.all()
+      def get_executed_scripts(namespace)
+        scripts = @dynamodb_repository.query(:namespace, namespace)
         if scripts.length > 0
           return scripts.sort { |a,b| b['timestamp'] <=> a['timestamp'] }.map { |i| i['timestamp'] }
         end
@@ -41,11 +41,11 @@ module DynamoDbFramework
         return nil
       end
 
-      def apply
+      def apply(namespace)
 
         DynamoDbFramework.logger.info "[#{self.class}] - Applying migration scripts"
 
-        executed_scripts = get_executed_scripts()
+        executed_scripts = get_executed_scripts(namespace)
 
         scripts = []
         DynamoDbFramework::MigrationScript.descendants.each do |ms|
@@ -57,7 +57,7 @@ module DynamoDbFramework
           if executed_scripts == nil || !executed_scripts.include?(script.timestamp)
             DynamoDbFramework.logger.info "[#{self.class}] - Applying script: #{script.timestamp}....."
             script.apply
-            @dynamodb_repository.put({ :timestamp => script.timestamp })
+            @dynamodb_repository.put({ :timestamp => script.timestamp, :namespace => script.namespace })
           end
         end
 
@@ -65,11 +65,11 @@ module DynamoDbFramework
 
       end
 
-      def rollback
+      def rollback(namespace)
 
         DynamoDbFramework.logger.info "[#{self.class}] - Rolling back started."
 
-        executed_scripts = get_executed_scripts()
+        executed_scripts = get_executed_scripts(namespace)
 
         scripts = []
         DynamoDbFramework::MigrationScript.descendants.each do |ms|
@@ -80,7 +80,7 @@ module DynamoDbFramework
         scripts.sort { |a,b| a.timestamp <=> b.timestamp }.each do |script|
           if executed_scripts != nil && executed_scripts.length > 0 && executed_scripts.include?(script.timestamp)
             script.undo
-            @dynamodb_repository.delete({ :timestamp => script.timestamp })
+            @dynamodb_repository.delete({ :timestamp => script.timestamp, :namespace => script.namespace })
             return
           end
         end

@@ -1,6 +1,7 @@
 module DynamoDbFramework
   class MigrationScript
     attr_accessor :timestamp
+    attr_accessor :namespace
 
     def apply
       raise 'Not implemented.'
