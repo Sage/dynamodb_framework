@@ -17,7 +17,7 @@ RSpec.describe DynamoDbFramework::Repository do
     item = TestItem.new
     item.id = SecureRandom.uuid
     item.name = name
-    item.timestamp = Time.now.to_i
+    item.timestamp = Time.now
     item.number = number
     subject.table_name = table_name
     subject.put(item)
@@ -27,7 +27,7 @@ RSpec.describe DynamoDbFramework::Repository do
     let(:current_time) { Time.now          }
     let(:id          ) { 'Item1'           }
     let(:name        ) { 'Name'            }
-    let(:timestamp   ) { current_time.to_i }
+    let(:timestamp   ) { current_time }
     let(:number      ) { 5                 }
 
     let(:item) do
@@ -61,7 +61,6 @@ RSpec.describe DynamoDbFramework::Repository do
 
         expect(stored_item['id']).to eq(id)
         expect(stored_item['name']).to eq(name)
-        expect(stored_item['timestamp']).to eq(timestamp)
         expect(stored_item['number']).to eq(number)
       end
     end
@@ -76,8 +75,30 @@ RSpec.describe DynamoDbFramework::Repository do
 
         expect(stored_item['id']).to eq(id)
         expect(stored_item['name']).to eq(nil)
-        expect(stored_item['timestamp']).to eq(timestamp)
         expect(stored_item['number']).to eq(number)
+      end
+    end
+
+    context 'when a date attribute is a DateTime class' do
+      let(:timestamp) {DateTime.now}
+
+      it 'stores the attribute in an iso8601 string format' do
+
+        subject.put(item)
+        stored_item = subject.get_by_key('id', id)
+
+        expect(stored_item['timestamp']).to eq(timestamp.iso8601)
+      end
+    end
+
+    context 'when a date attribute is a Time class' do
+      let(:timestamp) {Time.now}
+
+      it 'stores the attribute as an Epoch int' do
+        subject.put(item)
+        stored_item = subject.get_by_key('id', id)
+
+        expect(stored_item['timestamp']).to eq(timestamp.to_i)
       end
     end
 

@@ -7,6 +7,11 @@ require_relative '../spec/test_migration_script2'
 require_relative '../spec/test_item.rb'
 require 'pry'
 
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/spec/'
+end
+
 DYNAMODB_STORE_ENDPOINT = 'http://192.168.99.100:8000'
 
 Aws.config[:credentials] = Aws::Credentials.new('test_key', 'test_secret')

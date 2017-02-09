@@ -250,6 +250,15 @@ Before calling any methods from the repository the **.table_name** attribute mus
 ### #put
 This method is called to insert an item into a DynamoDb table.
 
+*Note*: 
+
+         [DateTime] attributes will be stored as an ISO8601 string
+         
+         [Time] attributes will be stored as an Epoch Int
+
+The intent is that if you need to sort in dynamo by dates, then make sure you use a [Time] type. The Epoch int allows 
+you to compare properly as comparing date strings are not reliable.
+
 **Params**
 
  - **item** [Object] [Required] The document to store within the table.
