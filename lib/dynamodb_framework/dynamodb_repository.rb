@@ -11,8 +11,12 @@ module DynamoDbFramework
       @dynamodb = store
     end
 
+    # Store the hash of an object to the dynamodb table
+    # *Note* : [DateTime] attributes will be stored as an ISO8601 string
+    #          [Time] attributes will be stored as an Epoch Int
+    # The intent is that if you need to sort in dynamo by dates, then make sure you use a [Time] type. The Epoch int allows
+    # you to compare properly as comparing date strings are not reliable.
     def put(item)
-
       hash = to_hash(item)
 
       clean_hash(hash)
@@ -196,14 +200,27 @@ module DynamoDbFramework
       @hash_helper ||= HashHelper.new
     end
 
+    # Convert empty string values to nil, as well as convert DateTime and Time to appropriate storage formats.
     def clean_hash(hash)
       hash.each do |key, value|
         if value == ''
           hash[key] = nil
+        elsif value.is_a?(Array)
+          value.each do |item|
+            clean_hash(item) if item.is_a?(Hash)
+          end
+        elsif [DateTime, Time].include?(value.class)
+          hash[key] = convert_date(value)
         elsif value.is_a?(Hash)
           clean_hash(value)
         end
       end
+    end
+
+    def convert_date(value)
+      klass = value.class
+      return value.iso8601 if klass == DateTime
+      return value.to_i if klass == Time
     end
   end
 end
