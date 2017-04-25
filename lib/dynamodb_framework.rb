@@ -10,5 +10,7 @@ require_relative 'dynamodb_framework/dynamodb_migration_script'
 require_relative 'dynamodb_framework/dynamodb_logger'
 require_relative 'dynamodb_framework/hash_helper'
 require_relative 'dynamodb_framework/dynamodb_namespace_migration_manager'
+require_relative 'dynamodb_framework/dynamodb_table'
+require_relative 'dynamodb_framework/dynamodb_global_secondary_index'
 
 require 'date'

@@ -5,6 +5,7 @@ require 'dynamodb_framework'
 require_relative '../spec/test_migration_script1'
 require_relative '../spec/test_migration_script2'
 require_relative '../spec/test_item.rb'
+require_relative '../spec/example_table'
 require 'pry'
 
 require 'simplecov'
