@@ -1,3 +1,5 @@
+require 'hash_kit'
+require 'json'
 require_relative 'dynamodb_framework/version'
 require_relative 'dynamodb_framework/dynamodb_attributes_builder'
 require_relative 'dynamodb_framework/dynamodb_store'
