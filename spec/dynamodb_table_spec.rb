@@ -45,16 +45,6 @@ RSpec.describe DynamoDbFramework::Table do
           expect{ ExampleTableWithoutPartitionKey.create(store: store) }.to raise_error(DynamoDbFramework::Table::InvalidConfigException)
         end
       end
-      context 'without read_capacity specified' do
-        it 'should raise an exception' do
-          expect{ ExampleTableWithoutReadCapacity.create(store: store) }.to raise_error(DynamoDbFramework::Table::InvalidConfigException)
-        end
-      end
-      context 'without write_capacity specified' do
-        it 'should raise an exception' do
-          expect{ ExampleTableWithoutWriteCapacity.create(store: store) }.to raise_error(DynamoDbFramework::Table::InvalidConfigException)
-        end
-      end
     end
   end
 
@@ -64,27 +54,15 @@ RSpec.describe DynamoDbFramework::Table do
       before do
         table_manager.drop(table_name)
         ExampleTable.create(store: store)
-        ExampleTable.read_capacity(200)
-        ExampleTable.write_capacity(100)
       end
       it 'should update the table' do
-        ExampleTable.update(store: store)
+        ExampleTable.update(store: store, read_capacity: 50, write_capacity: 50)
       end
     end
     context 'when an invalid table class calls the update method' do
       context 'without a table_name specified' do
         it 'should raise an exception' do
-          expect{ ExampleTableWithoutTableName.update(store: store) }.to raise_error(DynamoDbFramework::Table::InvalidConfigException)
-        end
-      end
-      context 'without read_capacity specified' do
-        it 'should raise an exception' do
-          expect{ ExampleTableWithoutReadCapacity.update(store: store) }.to raise_error(DynamoDbFramework::Table::InvalidConfigException)
-        end
-      end
-      context 'without write_capacity specified' do
-        it 'should raise an exception' do
-          expect{ ExampleTableWithoutWriteCapacity.update(store: store) }.to raise_error(DynamoDbFramework::Table::InvalidConfigException)
+          expect{ ExampleTableWithoutTableName.update(store: store, read_capacity: 50, write_capacity: 50) }.to raise_error(DynamoDbFramework::Table::InvalidConfigException)
         end
       end
     end

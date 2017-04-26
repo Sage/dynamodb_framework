@@ -1,5 +1,5 @@
 module DynamoDbFramework
-  module GlobalSecondaryIndex
+  module Index
 
     class InvalidConfigException < StandardError
       def initialize(message)
@@ -11,9 +11,7 @@ module DynamoDbFramework
       details = {
           index_name: self.instance_variable_get(:@index_name),
           table: self.instance_variable_get(:@table),
-          partition_key: self.instance_variable_get(:@partition_key),
-          read_capacity: self.instance_variable_get(:@read_capacity),
-          write_capacity: self.instance_variable_get(:@write_capacity)
+          partition_key: self.instance_variable_get(:@partition_key)
       }
       if self.instance_variable_defined?(:@range_key)
         details[:range_key] = self.instance_variable_get(:@range_key)
@@ -37,15 +35,7 @@ module DynamoDbFramework
       self.instance_variable_set(:@range_key, { field: field, type: type })
     end
 
-    def read_capacity(value)
-      self.instance_variable_set(:@read_capacity, value)
-    end
-
-    def write_capacity(value)
-      self.instance_variable_set(:@write_capacity, value)
-    end
-
-    def create(store:)
+    def create(store:, read_capacity: 25, write_capacity: 25)
       unless self.instance_variable_defined?(:@index_name)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Index name must be specified.')
       end
@@ -55,6 +45,7 @@ module DynamoDbFramework
         raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
       end
       table = self.instance_variable_get(:@table)
+      table_name = table.config[:table_name]
 
       unless self.instance_variable_defined?(:@partition_key)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Partition key must be specified.')
@@ -64,16 +55,6 @@ module DynamoDbFramework
       if self.instance_variable_defined?(:@range_key)
         range_key = self.instance_variable_get(:@range_key)
       end
-
-      unless self.instance_variable_defined?(:@read_capacity)
-        raise DynamoDbFramework::Index::InvalidConfigException.new('Read capacity must be specified.')
-      end
-      read_capacity = self.instance_variable_get(:@read_capacity)
-
-      unless self.instance_variable_defined?(:@write_capacity)
-        raise DynamoDbFramework::Index::InvalidConfigException.new('Write capacity must be specified.')
-      end
-      write_capacity = self.instance_variable_get(:@write_capacity)
 
       builder = DynamoDbFramework::AttributesBuilder.new
       builder.add({ name: partition_key[:field], type: partition_key[:type], key: :partition })
@@ -96,7 +77,7 @@ module DynamoDbFramework
       table_manager.add_index(table_name, builder.attributes, index)
     end
 
-    def update(store:)
+    def update(store:, read_capacity:, write_capacity:)
       unless self.instance_variable_defined?(:@index_name)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Index name must be specified.')
       end
@@ -106,16 +87,6 @@ module DynamoDbFramework
         raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
       end
       table = self.instance_variable_get(:@table)
-
-      unless self.instance_variable_defined?(:@read_capacity)
-        raise DynamoDbFramework::Index::InvalidConfigException.new('Read capacity must be specified.')
-      end
-      read_capacity = self.instance_variable_get(:@read_capacity)
-
-      unless self.instance_variable_defined?(:@write_capacity)
-        raise DynamoDbFramework::Index::InvalidConfigException.new('Write capacity must be specified.')
-      end
-      write_capacity = self.instance_variable_get(:@write_capacity)
 
       DynamoDbFramework::TableManager.new(store).update_index_throughput(table.config[:table_name], index_name, read_capacity, write_capacity)
     end

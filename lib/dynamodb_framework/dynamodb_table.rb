@@ -10,9 +10,7 @@ module DynamoDbFramework
     def config
       details = {
           table_name: self.instance_variable_get(:@table_name),
-          partition_key: self.instance_variable_get(:@partition_key),
-          read_capacity: self.instance_variable_get(:@read_capacity),
-          write_capacity: self.instance_variable_get(:@write_capacity)
+          partition_key: self.instance_variable_get(:@partition_key)
       }
       if self.instance_variable_defined?(:@range_key)
         details[:range_key] = self.instance_variable_get(:@range_key)
@@ -32,15 +30,7 @@ module DynamoDbFramework
       self.instance_variable_set(:@range_key, { field: field, type: type })
     end
 
-    def read_capacity(value)
-      self.instance_variable_set(:@read_capacity, value)
-    end
-
-    def write_capacity(value)
-      self.instance_variable_set(:@write_capacity, value)
-    end
-
-    def create(store:)
+    def create(store:, read_capacity: 25, write_capacity: 25)
       unless self.instance_variable_defined?(:@table_name)
         raise DynamoDbFramework::Table::InvalidConfigException.new('Table name must be specified.')
       end
@@ -55,16 +45,6 @@ module DynamoDbFramework
         range_key = self.instance_variable_get(:@range_key)
       end
 
-      unless self.instance_variable_defined?(:@read_capacity)
-        raise DynamoDbFramework::Table::InvalidConfigException.new('Read capacity must be specified.')
-      end
-      read_capacity = self.instance_variable_get(:@read_capacity)
-
-      unless self.instance_variable_defined?(:@write_capacity)
-        raise DynamoDbFramework::Table::InvalidConfigException.new('Write capacity must be specified.')
-      end
-      write_capacity = self.instance_variable_get(:@write_capacity)
-
       builder = DynamoDbFramework::AttributesBuilder.new
       builder.add({ name: partition_key[:field], type: partition_key[:type], key: :partition })
       if range_key != nil
@@ -74,21 +54,11 @@ module DynamoDbFramework
       DynamoDbFramework::TableManager.new(store).create_table({ name: table_name, attributes: builder.attributes, read_capacity: read_capacity, write_capacity: write_capacity })
     end
 
-    def update(store:)
+    def update(store:, read_capacity:, write_capacity:)
       unless self.instance_variable_defined?(:@table_name)
         raise DynamoDbFramework::Table::InvalidConfigException.new('Table name must be specified.')
       end
       table_name = self.instance_variable_get(:@table_name)
-
-      unless self.instance_variable_defined?(:@read_capacity)
-        raise DynamoDbFramework::Table::InvalidConfigException.new('Read capacity must be specified.')
-      end
-      read_capacity = self.instance_variable_get(:@read_capacity)
-
-      unless self.instance_variable_defined?(:@write_capacity)
-        raise DynamoDbFramework::Table::InvalidConfigException.new('Write capacity must be specified.')
-      end
-      write_capacity = self.instance_variable_get(:@write_capacity)
 
       DynamoDbFramework::TableManager.new(store).update_throughput(table_name, read_capacity, write_capacity)
     end
