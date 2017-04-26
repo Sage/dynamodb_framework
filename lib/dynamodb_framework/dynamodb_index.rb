@@ -91,5 +91,9 @@ module DynamoDbFramework
       DynamoDbFramework::TableManager.new(store).update_index_throughput(table.config[:table_name], index_name, read_capacity, write_capacity)
     end
 
+    def query(partition:)
+      DynamoDbFramework::Query.new(index_name: config[:index_name], table_name: config[:table].config[:table_name], partition_key: config[:partition_key][:field], partition_value: partition)
+    end
+
   end
 end

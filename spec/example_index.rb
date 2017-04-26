@@ -4,7 +4,7 @@ class ExampleIndex
   index_name 'example_index'
   table ExampleTable
   partition_key :name, :S
-  range_key :timestamp, :N
+  range_key :id, :S
 
 end
 
@@ -13,7 +13,7 @@ class ExampleIndexWithoutIndexName
 
   table ExampleTable
   partition_key :name, :S
-  range_key :timestamp, :N
+  range_key :id, :S
 
 end
 
@@ -22,7 +22,7 @@ class ExampleIndexWithoutTable
 
   index_name 'example_index'
   partition_key :name, :S
-  range_key :timestamp, :N
+  range_key :id, :S
 
 end
 
@@ -31,7 +31,7 @@ class ExampleIndexWithoutPartitionKey
 
   table ExampleTable
   index_name 'example_index'
-  range_key :timestamp, :N
+  range_key :id, :S
 
 end
 
