@@ -14,79 +14,79 @@ module DynamoDbFramework
       self
     end
 
-    def ==(value)
+    def eq(value)
       condition(expression: '==', value: value)
       self
     end
 
-    def !=(value)
+    def not_eq(value)
       condition(expression: '!=', value: value)
       self
     end
 
-    def >(value)
+    def gt(value)
       condition(expression: '>', value: value)
       self
     end
 
-    def >=(value)
+    def gt_eq(value)
       condition(expression: '>=', value: value)
       self
     end
 
-    def <(value)
+    def lt(value)
       condition(expression: '<', value: value)
       self
     end
 
-    def <=(value)
+    def lt_eq(value)
       condition(expression: '<=', value: value)
       self
     end
 
-    def and()
+    def and
       @parts << { type: :and }
       self
     end
 
-    def or()
+    def or
       @parts << { type: :or }
       self
     end
 
     def execute(store:, limit: nil, count: false)
-      expression_string, expression_params = generate_expression
+      build
       repository = DynamoDbFramework::Repository.new(store)
       repository.table_name = @table_name
-      repository.query(@partition_key, @partition_value, nil, nil, expression_string, expression_params, @index_name, limit, count)
+      repository.query(@partition_key, @partition_value, nil, nil, @expression_string, @expression_params, @index_name, limit, count)
     end
 
-    def generate_expression
-      expression_string = ''
-      expression_params = {}
+    def build
+      @expression_string = ''
+      @expression_params = {}
 
       counter = 0
       @parts.each do |p|
         case p[:type]
           when :field
             field_param = '#' + p[:value].to_s
-            expression_string += ' ' + field_param
-            expression_params[field_param] = p[:value].to_s
+            @expression_string += ' ' + field_param
+            @expression_params[field_param] = p[:value].to_s
           when :condition
             param_name = ':p' + counter.to_s
             counter = counter + 1
-            expression_string += ' ' + p[:expression].to_s + ' ' + param_name
-            expression_params[param_name] = clean_value(p[:value])
+            @expression_string += ' ' + p[:expression].to_s + ' ' + param_name
+            @expression_params[param_name] = clean_value(p[:value])
           when :and
-            expression_string += ' and'
+            @expression_string += ' and'
           when :or
-            expression_string += ' or'
+            @expression_string += ' or'
           else
             raise 'Invalid query part'
         end
       end
 
-      return expression_string.strip, expression_params
+      return @expression_string.strip, @expression_params
     end
 
     def condition(expression:, value:)

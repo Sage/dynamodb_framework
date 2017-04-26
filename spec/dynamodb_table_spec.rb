@@ -102,18 +102,30 @@ RSpec.describe DynamoDbFramework::Table do
     end
 
     it 'should return the expected items' do
-      results = ExampleTable2.query(partition: 'name 1').number.>=(1).and.number.<=(5).execute(store: store)
+      results = ExampleTable2.query(partition: 'name 1')
+                    .number.gt_eq(1)
+                    .and
+                    .number.lt_eq(5)
+                    .execute(store: store)
       expect(results.length).to eq 4
     end
     context 'when limit is specified' do
       it 'should return the expected items' do
-        results = ExampleTable2.query(partition: 'name 1').number.>=(1).and.number.<=(5).execute(store: store, limit: 1)
+        results = ExampleTable2.query(partition: 'name 1')
+                      .number.gt_eq(1)
+                      .and
+                      .number.lt_eq(5)
+                      .execute(store: store, limit: 1)
         expect(results.length).to eq 1
       end
     end
     context 'when count is specified' do
       it 'should return the expected count' do
-        count = ExampleTable2.query(partition: 'name 1').number.>=(1).and.number.<=(5).execute(store: store, count: 4)
+        count = ExampleTable2.query(partition: 'name 1')
+                    .number.gt_eq(1)
+                    .and
+                    .number.lt_eq(5)
+                    .execute(store: store, count: 4)
         expect(count).to eq 4
       end
     end

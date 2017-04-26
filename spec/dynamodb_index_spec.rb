@@ -126,18 +126,30 @@ RSpec.describe DynamoDbFramework::Index do
     end
 
     it 'should return the expected items' do
-      results = ExampleIndex.query(partition: 'name 1').number.>=(1).and.number.<=(5).execute(store: store)
+      results = ExampleIndex.query(partition: 'name 1')
+                    .number.gt_eq(1)
+                    .and
+                    .number.lt_eq(5)
+                    .execute(store: store)
       expect(results.length).to eq 4
     end
     context 'when limit is specified' do
       it 'should return the expected items' do
-        results = ExampleIndex.query(partition: 'name 1').number.>=(1).and.number.<=(5).execute(store: store, limit: 1)
+        results = ExampleIndex.query(partition: 'name 1')
+                      .number.gt_eq(1)
+                      .and
+                      .number.lt_eq(5)
+                      .execute(store: store, limit: 1)
         expect(results.length).to eq 1
       end
     end
     context 'when count is specified' do
       it 'should return the expected count' do
-        count = ExampleIndex.query(partition: 'name 1').number.>=(1).and.number.<=(5).execute(store: store, count: 4)
+        count = ExampleIndex.query(partition: 'name 1')
+                    .number.gt_eq(1)
+                    .and
+                    .number.lt_eq(5)
+                    .execute(store: store, count: 4)
         expect(count).to eq 4
       end
     end
