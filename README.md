@@ -20,6 +20,180 @@ Or install it yourself as:
 
 ## Usage
 
+# Table
+Before you can work with any data in dynamodb you require a table definition.
+To define a table create a class and use the `DynamoDbFramework::Table` module.
+
+    class ExampleTable
+      extend DynamoDbFramework::Table
+    
+      table_name 'example'
+      partition_key :id, :S
+      range_key :timestamp, :N
+    
+    end
+    
+**attributes**
+
+ - **table_name** [String] [Required] This is used to specify the name of the table.
+ - **partition_key** [Symbol, Symbol] [Required] This is used to specify the item field to use for the partition key, along with the type of the field.
+ - **range_key** [Symbol, Symbol] [Optional] This is used to specify the item field to use for the range key, along with the type of the field.
+  
+This definition can then be used to interact with DynamoDb in relation to the table.
+
+## #create
+This method is called create the table definition within a dynamodb account.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **read_capacity** [Integer] [Optional] [Default=25] This is used to specify the read capacity to provision for this table.
+ - **write_capacity** [Integer] [Optional] [Default=25] This is used to specify the write capacity to provision for this table.
+     
+
+    ExampleTable.create(store: store, read_capacity: 50, write_capacity: 35)
+  
+## #update
+This method is called to update the provisioned capacity for the table.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **read_capacity** [Integer] [Required] This is used to specify the read capacity to provision for this table.
+ - **write_capacity** [Integer] [Required] This is used to specify the write capacity to provision for this table.
+
+    ExampleTable.update(store: store, read_capacity: 100, write_capacity: 50)
+
+## #drop
+This method is called to drop the table from a dynamodb account.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+
+    ExampleTable.drop(store: store)
+    
+## #get_item
+This method is called to get a single item from the table by its unique key.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **partition** [object] [Required] This is used to specify the partition_key value of the item to get.
+ - **range** [object] [Optional] This is used to specify the range_key value of the item to get.
+  
+    
+    ExampleTable.get_item(store: store, partition: uuid, range: timestamp)
+
+
+## #put_item
+This method is called to put a single item into the table.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **item** [object] [Required] This is the item to store in the table.
+
+
+    ExampleTable.put_item(store: store, item: item)
+
+
+## #delete_item
+This method is called to delete an item from the table.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **partition** [object] [Required] This is used to specify the partition_key value of the item.
+ - **range** [object] [Optional] This is used to specify the range_key value of the item.
+  
+    
+    ExampleTable.delete_item(store: store, partition: uuid, range: timestamp)
+
+
+## #all
+This method is called to return all items from the table.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+
+
+## #query
+This method is called to query the table for a collection of items.
+
+**Params**
+
+ - **partition** [object] [Required] This is used to specify the partition_key to query within.
+
+The query is then built up using method chaining e.g:
+
+    query = ExampleTable.query(partition: partition_value).name.eq('fred').and.age.gt(18)
+    
+The above query chain translates into:
+
+    FROM partition WHERE name == 'fred' AND age > 18
+     
+To execute the query you can then call `#execute` on the query:
+
+    query.execute(store: store)
+    
+### #execute
+This method is called to execute a query.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **limit** [Integer] [Optional] This is used to specify a limit to the number of items returned by the query.
+ - **count** [Boolean] [Optional] This is used to specify if the query should just return a count of results.
+
+## Query expressions
+
+### #eq(value)
+This method is used to specify the `==` operator within a query.
+
+### #not_eq(value)
+This method is called to specify the `!=` operator within a query.
+
+### #gt(value)
+This method is called to specify the `>` operator within a query.
+
+### #gt_eq(vaue)
+This method is called to specify the `>=` operator within a query.
+
+### #lt(value)
+This method is called to specify the `<` operator within a query.
+
+### #lt_eq(value)
+This method is called to specify the `<=` operator within a query.
+
+### #and
+This method is called to combine conditions together in a traditional `&&` method within a query.
+
+### #or 
+This method is called to combine conditions together in a traditional `||` method within a query.
+
+# Index
+To define a global secondary index in dynamodb create an index definition class that extends from the `DynamoDbFramework::Index` module.
+
+    class ExampleIndex
+      extend DynamoDbFramework::Index
+    
+      index_name 'example_index'
+      table ExampleTable
+      partition_key :name, :S
+      range_key :id, :S
+    
+    end
+    
+**attributes**
+
+ - **index_name** [String] [Required] This is used to specify the name of the index.
+ - **table** [Table] [Required] This is the table definition class for the table the index should be applied to.
+ - **partition_key** [Symbol, Symbol] [Required] This is used to specify the item field to use for the partition key, along with the type of the field.
+ - **range_key** [Symbol, Symbol] [Optional] This is used to specify the item field to use for the range key, along with the type of the field.
+  
+
 # MigrationScripts
 To create or modify a DynamoDb instance you first need to create a migration script:
 
