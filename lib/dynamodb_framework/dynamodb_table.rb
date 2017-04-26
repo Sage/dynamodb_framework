@@ -95,10 +95,10 @@ module DynamoDbFramework
       repository.table_name = config[:table_name]
 
       if range != nil
-        range_key = config[:range_key]
+        range_key = config[:range_key][:field]
       end
 
-      repository.delete_items(partition_key: config[:partition_key], partition_key_value: partition, range_key: range_key, range_key_value: range)
+      repository.delete_item(partition_key: config[:partition_key][:field], partition_key_value: partition, range_key: range_key, range_key_value: range)
     end
 
   end

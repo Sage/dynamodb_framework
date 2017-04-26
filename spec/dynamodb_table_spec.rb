@@ -157,7 +157,7 @@ RSpec.describe DynamoDbFramework::Table do
     end
   end
 
-  describe '#put_item' do
+  describe '#CRUD' do
     let(:repository) do
       DynamoDbFramework::Repository.new(store)
     end
@@ -173,9 +173,11 @@ RSpec.describe DynamoDbFramework::Table do
       item
     end
 
-    it 'should add the item to the table' do
+    it 'should add, get and delete the item to the table' do
       ExampleTable.put_item(store: store, item: item)
       expect(ExampleTable.get_item(store: store, partition: item.id, range: item.timestamp)).not_to be_nil
+      ExampleTable.delete_item(store: store, partition: item.id, range: item.timestamp)
+      expect(ExampleTable.get_item(store: store, partition: item.id, range: item.timestamp)).to be_nil
     end
   end
 
