@@ -7,6 +7,15 @@ class ExampleTable
 
 end
 
+class ExampleTable2
+  extend DynamoDbFramework::Table
+
+  table_name 'example2'
+  partition_key :name, :S
+  range_key :id, :S
+
+end
+
 class ExampleTableWithoutTableName
   extend DynamoDbFramework::Table
 
