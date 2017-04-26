@@ -76,7 +76,7 @@ module DynamoDbFramework
             param_name = ':p' + counter.to_s
             counter = counter + 1
             expression_string += ' ' + p[:expression].to_s + ' ' + param_name
-            expression_params[param_name] = p[:value]
+            expression_params[param_name] = clean_value(p[:value])
           when :and
             expression_string += ' and'
           when :or
@@ -91,6 +91,20 @@ module DynamoDbFramework
 
     def condition(expression:, value:)
       @parts << { type: :condition, expression: expression, value: value }
+    end
+
+    def convert_date(value)
+      klass = value.class
+      return value.iso8601 if klass == DateTime
+      return value.to_i if klass == Time
+    end
+
+    def clean_value(value)
+      if value.is_a?(Time) || value.is_a?(DateTime)
+        convert_date(value)
+      else
+        value
+      end
     end
 
   end

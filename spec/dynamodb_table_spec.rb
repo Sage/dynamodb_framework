@@ -119,4 +119,64 @@ RSpec.describe DynamoDbFramework::Table do
     end
   end
 
+  describe '#all' do
+    let(:repository) do
+      DynamoDbFramework::Repository.new(store)
+    end
+
+    let(:table_name) { ExampleTable2.config[:table_name] }
+
+    def create_query_item(name, number)
+      item = TestItem.new
+      item.id = SecureRandom.uuid
+      item.name = name
+      item.timestamp = Time.now
+      item.number = number
+      repository.table_name = table_name
+      repository.put(item)
+    end
+
+    before do
+      table_manager.drop(table_name)
+      ExampleTable2.create(store: store)
+
+      create_query_item('name 1', 1)
+      create_query_item('name 1', 2)
+      create_query_item('name 1', 3)
+      create_query_item('name 1', 4)
+      create_query_item('name 2', 1)
+      create_query_item('name 2', 2)
+      create_query_item('name 2', 3)
+      create_query_item('name 3', 1)
+      create_query_item('name 3', 2)
+    end
+
+    it 'should return all items' do
+      results = ExampleTable2.all(store: store)
+      expect(results.length).to eq 9
+    end
+  end
+
+  describe '#put_item' do
+    let(:repository) do
+      DynamoDbFramework::Repository.new(store)
+    end
+
+    let(:table_name) { ExampleTable.config[:table_name] }
+
+    let(:item) do
+      item = TestItem.new
+      item.id = SecureRandom.uuid
+      item.name = 'abc'
+      item.timestamp = Time.now
+      item.number = 1
+      item
+    end
+
+    it 'should add the item to the table' do
+      ExampleTable.put_item(store: store, item: item)
+      expect(ExampleTable.get_item(store: store, partition: item.id, range: item.timestamp)).not_to be_nil
+    end
+  end
+
 end
