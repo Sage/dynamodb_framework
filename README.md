@@ -20,6 +20,289 @@ Or install it yourself as:
 
 ## Usage
 
+# Table
+Before you can work with any data in dynamodb you require a table definition.
+To define a table create a class and use the `DynamoDbFramework::Table` module.
+
+    class ExampleTable
+      extend DynamoDbFramework::Table
+    
+      table_name 'example'
+      partition_key :id, :S
+      range_key :timestamp, :N
+    
+    end
+    
+**attributes**
+
+ - **table_name** [String] [Required] This is used to specify the name of the table.
+ - **partition_key** [Symbol, Symbol] [Required] This is used to specify the item field to use for the partition key, along with the type of the field.
+ - **range_key** [Symbol, Symbol] [Optional] This is used to specify the item field to use for the range key, along with the type of the field.
+  
+This definition can then be used to interact with DynamoDb in relation to the table.
+
+## #create
+This method is called create the table definition within a dynamodb account.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **read_capacity** [Integer] [Optional] [Default=25] This is used to specify the read capacity to provision for this table.
+ - **write_capacity** [Integer] [Optional] [Default=25] This is used to specify the write capacity to provision for this table.
+     
+
+    ExampleTable.create(store: store, read_capacity: 50, write_capacity: 35)
+  
+## #update
+This method is called to update the provisioned capacity for the table.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **read_capacity** [Integer] [Required] This is used to specify the read capacity to provision for this table.
+ - **write_capacity** [Integer] [Required] This is used to specify the write capacity to provision for this table.
+
+    ExampleTable.update(store: store, read_capacity: 100, write_capacity: 50)
+
+## #drop
+This method is called to drop the table from a dynamodb account.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+
+    ExampleTable.drop(store: store)
+    
+    
+## #exists?
+This method is called to determine if this table exists in a dynamodb account.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+
+    ExampleTable.exists?(store: store)
+    
+## #get_item
+This method is called to get a single item from the table by its unique key.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **partition** [object] [Required] This is used to specify the partition_key value of the item to get.
+ - **range** [object] [Optional] This is used to specify the range_key value of the item to get.
+  
+    
+    ExampleTable.get_item(store: store, partition: uuid, range: timestamp)
+
+
+## #put_item
+This method is called to put a single item into the table.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **item** [object] [Required] This is the item to store in the table.
+
+
+    ExampleTable.put_item(store: store, item: item)
+
+
+## #delete_item
+This method is called to delete an item from the table.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **partition** [object] [Required] This is used to specify the partition_key value of the item.
+ - **range** [object] [Optional] This is used to specify the range_key value of the item.
+  
+    
+    ExampleTable.delete_item(store: store, partition: uuid, range: timestamp)
+
+
+## #all
+This method is called to return all items from the table.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+
+    ExampleTable.all(store: store)
+    
+
+## #query
+This method is called to query the table for a collection of items.
+
+**Params**
+
+ - **partition** [object] [Required] This is used to specify the partition_key to query within.
+
+The query is then built up using method chaining e.g:
+
+    query = ExampleTable.query(partition: partition_value).name.eq('fred').and.age.gt(18)
+    
+The above query chain translates into:
+
+    FROM partition_value WHERE name == 'fred' AND age > 18
+     
+To execute the query you can then call `#execute` on the query:
+
+    query.execute(store: store)
+    
+### #execute
+This method is called to execute a query.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **limit** [Integer] [Optional] This is used to specify a limit to the number of items returned by the query.
+ - **count** [Boolean] [Optional] This is used to specify if the query should just return a count of results.
+
+## Query expressions
+
+### #eq(value)
+This method is used to specify the `==` operator within a query.
+
+### #not_eq(value)
+This method is called to specify the `!=` operator within a query.
+
+### #gt(value)
+This method is called to specify the `>` operator within a query.
+
+### #gt_eq(vaue)
+This method is called to specify the `>=` operator within a query.
+
+### #lt(value)
+This method is called to specify the `<` operator within a query.
+
+### #lt_eq(value)
+This method is called to specify the `<=` operator within a query.
+
+### #and
+This method is called to combine conditions together in a traditional `&&` method within a query.
+
+### #or 
+This method is called to combine conditions together in a traditional `||` method within a query.
+
+# Index
+To define a global secondary index in dynamodb create an index definition class that extends from the `DynamoDbFramework::Index` module.
+
+    class ExampleIndex
+      extend DynamoDbFramework::Index
+    
+      index_name 'example_index'
+      table ExampleTable
+      partition_key :name, :S
+      range_key :id, :S
+    
+    end
+    
+**attributes**
+
+ - **index_name** [String] [Required] This is used to specify the name of the index.
+ - **table** [Table] [Required] This is the table definition class for the table the index should be applied to.
+ - **partition_key** [Symbol, Symbol] [Required] This is used to specify the item field to use for the partition key, along with the type of the field.
+ - **range_key** [Symbol, Symbol] [Optional] This is used to specify the item field to use for the range key, along with the type of the field.
+
+
+## #create
+This method is called create the index definition within a dynamodb account.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **read_capacity** [Integer] [Optional] [Default=25] This is used to specify the read capacity to provision for this index.
+ - **write_capacity** [Integer] [Optional] [Default=25] This is used to specify the write capacity to provision for this index.
+     
+
+    ExampleIndex.create(store: store, read_capacity: 50, write_capacity: 35)
+  
+## #update
+This method is called to update the provisioned capacity for the index.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **read_capacity** [Integer] [Required] This is used to specify the read capacity to provision for this index.
+ - **write_capacity** [Integer] [Required] This is used to specify the write capacity to provision for this index.
+
+    ExampleIndex.update(store: store, read_capacity: 100, write_capacity: 50)
+
+## #drop
+This method is called to drop the current index.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+
+    ExampleIndex.drop(store: store)
+  
+## #exists?
+This method is called to determine if this index exists in a dynamodb account.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+
+    ExampleIndex.exists?(store: store)
+
+
+## #query
+This method is called to query the index for a collection of items.
+
+**Params**
+
+ - **partition** [object] [Required] This is used to specify the partition_key to query within.
+
+The query is then built up using method chaining e.g:
+
+    query = ExampleIndex.query(partition: partition_value).gender.eq('male').and.age.gt(18)
+    
+The above query chain translates into:
+
+    FROM partition_value WHERE gender == 'male' AND age > 18
+     
+To execute the query you can then call `#execute` on the query:
+
+    query.execute(store: store)
+    
+### #execute
+This method is called to execute a query.
+
+**Params**
+
+ - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **limit** [Integer] [Optional] This is used to specify a limit to the number of items returned by the query.
+ - **count** [Boolean] [Optional] This is used to specify if the query should just return a count of results.
+
+## Query expressions
+
+### #eq(value)
+This method is used to specify the `==` operator within a query.
+
+### #not_eq(value)
+This method is called to specify the `!=` operator within a query.
+
+### #gt(value)
+This method is called to specify the `>` operator within a query.
+
+### #gt_eq(vaue)
+This method is called to specify the `>=` operator within a query.
+
+### #lt(value)
+This method is called to specify the `<` operator within a query.
+
+### #lt_eq(value)
+This method is called to specify the `<=` operator within a query.
+
+### #and
+This method is called to combine conditions together in a traditional `&&` method within a query.
+
+### #or 
+This method is called to combine conditions together in a traditional `||` method within a query.
+
+
 # MigrationScripts
 To create or modify a DynamoDb instance you first need to create a migration script:
 
@@ -33,25 +316,10 @@ To create or modify a DynamoDb instance you first need to create a migration scr
 		end
 
 		def apply
-			#create an instance of the table manager
-			manager = DynamoDbFramework::TableManager.new
-			#create an attribute builder
-			builder = DynamoDbFramework::AttributesBuilder.new
-
-			#set the hash key attribute
-			builder.add(:type, :S)			
-
-			#create the table
-			manager.create('event_tracking', builder.attributes, :type)
+			EventTrackingTable.create(store: store, read_capacity: 50, write_capacity: 35)
 		end
-		def undo
-		
-			#create an instance of the table manager
-			manager = DynamoDbFramework::TableManager.new
-
-			#drop the table
-			manager.drop('event_tracking')
-		
+		def undo		
+			EventTrackingTable.drop(store: store)		
 		end
 	end
 
@@ -67,13 +335,11 @@ Each migration script should have a unique fixed timestamp value of the followin
 
 This timestamp is used to track installation of each migration script and insure correct apply/undo ordering.
 
-# DynamoDbMigrationManager
+# DynamoDbFramework::Namespace::MigrationManager
 This manager is called to apply/rollback migration script changes against a DynamoDb instance.
 
 ### #connect
 This method is called to connect the manager to the DynamoDb instance. If the migration manager has never been connected to the instance then the 'dynamodb_migrations' table will be created to record migration script executions.
-
-**Example**
 
     manager = DynamoDbFramework::MigrationManager.new
     manager.connect
@@ -81,20 +347,29 @@ This method is called to connect the manager to the DynamoDb instance. If the mi
 ### #apply
 This method is called to execute any migration scripts (in chronological order) that have not been executed against the current DynamoDb instance.
 
-**Example**
+**Params**
+
+ - **namespace** [String] [Required] This is used to specify the namespace for all migration scripts to be executed within.
+
 
     #apply any outstanding migration scripts
-    manager.apply
+    manager.apply(namespace)
 
 ### #rollback
 This method is called to rollback the last migration script that was executed against the current DynamoDb instance.
 
+**Params**
+
+ - **namespace** [String] [Required] This is used to specify the namespace for all migration scripts to be executed within.
+
+
     #rollback the last migration script
-    manager.rollback
+    manager.rollback(namespace)
 
 # DynamoDbFramework::TableManager
 
 This manager object provides the following methods for managing tables within a DynamoDb instance.
+> NOTE: This functionality should now be handled via the DynamoDbFramework::Table & DynamoDbFramework::Index module as described above.
 
 ### #create
 
@@ -240,6 +515,8 @@ This method is called to check if an index exists on a table within the database
 # DynamoDbFramework::Repository
 
 This is a base repository that exposes core functionality for interacting with a DynamoDb table. It is intended to be wrapped inside of a table specific repository, and is only provided to give a common way of interacting with a DynamoDb table.
+
+> NOTE: This functionality should now be handled via a DynamoDbFramework::Table or DynamoDbFramework::Index as detailed above.
 
 Before calling any methods from the repository the **.table_name** attribute must be set so that the repository knows which table to run the operations against.
 

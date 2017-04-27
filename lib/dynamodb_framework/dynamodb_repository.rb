@@ -47,12 +47,34 @@ module DynamoDbFramework
 
     end
 
+    def delete_item(partition_key:, partition_key_value:, range_key: nil, range_key_value: nil)
+
+      keys = {
+          partition_key.to_s => clean_value(partition_key_value)
+      }
+
+      if range_key != nil
+        keys[range_key.to_s] = clean_value(range_key_value)
+      end
+
+      params =
+          {
+              table_name: @table_name,
+              key: keys
+          }
+
+      dynamodb.client.delete_item(params)
+
+      return true
+
+    end
+
     def get_by_key(partition_key, partition_value, range_key = nil, range_value = nil)
 
       key = {}
-      key[partition_key] = partition_value
+      key[partition_key] = clean_value(partition_value)
       if(range_key != nil)
-        key[range_key] = range_value
+        key[range_key] = clean_value(range_value)
       end
 
       params = {
@@ -99,7 +121,7 @@ module DynamoDbFramework
           if key[0] == '#'
             params[:expression_attribute_names][key] = value
           elsif key[0] == ':'
-            params[:expression_attribute_values][key] = value
+            params[:expression_attribute_values][key] = clean_value(value)
           end
         end
 
@@ -147,19 +169,19 @@ module DynamoDbFramework
       if range_key_name != nil
         params[:key_condition_expression] = '#partition_key = :partition_key and #range_key = :range_key'
         params[:expression_attribute_names] = { '#partition_key' => partition_key_name, '#range_key' => range_key_name }
-        params[:expression_attribute_values] = { ':partition_key' => partition_key_value, ':range_key' => range_key_value }
+        params[:expression_attribute_values] = { ':partition_key' => clean_value(partition_key_value), ':range_key' => clean_value(range_key_value) }
       else
         params[:key_condition_expression] = '#partition_key = :partition_key'
         params[:expression_attribute_names] = { '#partition_key' => partition_key_name }
-        params[:expression_attribute_values] = { ':partition_key' => partition_key_value }
+        params[:expression_attribute_values] = { ':partition_key' => clean_value(partition_key_value) }
       end
 
       if expression_params != nil
         expression_params.each do |key, value|
           if key[0] == '#'
-            params[:expression_attribute_names][key] = value
+            params[:expression_attribute_names][key] = clean_value(value)
           elsif key[0] == ':'
-            params[:expression_attribute_values][key] = value
+            params[:expression_attribute_values][key] = clean_value(value)
           end
         end
 
@@ -221,6 +243,14 @@ module DynamoDbFramework
       klass = value.class
       return value.iso8601 if klass == DateTime
       return value.to_i if klass == Time
+    end
+
+    def clean_value(value)
+      if value.is_a?(Time) || value.is_a?(DateTime)
+        convert_date(value)
+      else
+        value
+      end
     end
   end
 end

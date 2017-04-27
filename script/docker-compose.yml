@@ -3,3 +3,11 @@ dynamodb:
   command: -port 8000
   ports:
     - "8000:8000"
+
+testrunner:
+  image: sageone/dynamodb_test_runner
+  container_name: test_runner
+  links:
+    - dynamodb
+  volumes:
+    - ../:/dynamodb_framework

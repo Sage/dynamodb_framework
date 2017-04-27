@@ -5,6 +5,8 @@ require 'dynamodb_framework'
 require_relative '../spec/test_migration_script1'
 require_relative '../spec/test_migration_script2'
 require_relative '../spec/test_item.rb'
+require_relative '../spec/example_table'
+require_relative '../spec/example_index'
 require 'pry'
 
 require 'simplecov'
@@ -12,7 +14,7 @@ SimpleCov.start do
   add_filter '/spec/'
 end
 
-DYNAMODB_STORE_ENDPOINT = 'http://0.0.0.0:8000'
+DYNAMODB_STORE_ENDPOINT = 'http://dynamodb:8000'
 
 Aws.config[:credentials] = Aws::Credentials.new('test_key', 'test_secret')
 Aws.config[:region] = 'eu-west-1'
