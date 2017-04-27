@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'pry'
-  spec.add_dependency 'hash_kit'
+  spec.add_dependency 'hash_kit', '~> 0.5'
   spec.add_dependency 'json'
   spec.add_dependency 'aws-sdk-core'
 end

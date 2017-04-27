@@ -83,6 +83,7 @@ module DynamoDbFramework
       }
 
       result = dynamodb.client.get_item(params)
+      hash_helper.hash_kit.indifferent!(result.item)
       return result.item
 
     end
@@ -95,6 +96,7 @@ module DynamoDbFramework
 
       output = []
       result.items.each do |item|
+        hash_helper.hash_kit.indifferent!(item)
         output.push(item)
       end
 
@@ -144,6 +146,7 @@ module DynamoDbFramework
       else
         output = []
         result.items.each do |item|
+          hash_helper.hash_kit.indifferent!(item)
           output.push(item)
         end
 
@@ -204,6 +207,7 @@ module DynamoDbFramework
       else
         output = []
         result.items.each do |item|
+          hash_helper.hash_kit.indifferent!(item)
           output.push(item)
         end
 

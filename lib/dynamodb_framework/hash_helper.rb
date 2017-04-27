@@ -5,6 +5,10 @@ module DynamoDbFramework
       strip_nil(hsh)
     end
 
+    def hash_kit
+      @hash_kit ||= HashKit::Helper.new
+    end
+
     private
 
     def strip_nil(obj)
@@ -14,10 +18,6 @@ module DynamoDbFramework
         val.nil?
       end
       obj.delete_if(&remove_nil)
-    end
-
-    def hash_kit
-      @hash_kit ||= HashKit::Helper.new
     end
   end
 end
