@@ -90,6 +90,60 @@ RSpec.describe DynamoDbFramework::Index do
     end
   end
 
+  describe '#drop' do
+    context 'when a valid index class calls the drop method' do
+      let(:index_name) { ExampleIndex.config[:index_name] }
+      before do
+        if table_manager.has_index?(table_name, index_name)
+          table_manager.drop_index(table_name, index_name)
+        end
+        ExampleIndex.create(store: store)
+      end
+      it 'should drop the index' do
+        ExampleIndex.drop(store: store)
+        expect(table_manager.has_index?(table_name, index_name)).to be false
+      end
+    end
+    context 'when an invalid index class calls the drop method' do
+      context 'without an index_name specified' do
+        it 'should raise an exception' do
+          expect{ ExampleIndexWithoutIndexName.drop(store: store) }.to raise_error(DynamoDbFramework::Index::InvalidConfigException)
+        end
+      end
+      context 'without a table specified' do
+        it 'should raise an exception' do
+          expect{ ExampleIndexWithoutTable.drop(store: store) }.to raise_error(DynamoDbFramework::Index::InvalidConfigException)
+        end
+      end
+    end
+  end
+
+  describe '#exists?' do
+    context 'when the index exists' do
+      let(:index_name) { ExampleIndex.config[:index_name] }
+      before do
+        if table_manager.has_index?(table_name, index_name)
+          table_manager.drop_index(table_name, index_name)
+        end
+        ExampleIndex.create(store: store)
+      end
+      it 'should return true' do
+        expect(ExampleIndex.exists?(store: store)).to be true
+      end
+    end
+    context 'when the index does NOT exist' do
+      let(:index_name) { ExampleIndex.config[:index_name] }
+      before do
+        if table_manager.has_index?(table_name, index_name)
+          table_manager.drop_index(table_name, index_name)
+        end
+      end
+      it 'should return false' do
+        expect(ExampleIndex.exists?(store: store)).to be false
+      end
+    end
+  end
+
   describe '#query' do
 
     let(:repository) do

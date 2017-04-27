@@ -68,6 +68,49 @@ RSpec.describe DynamoDbFramework::Table do
     end
   end
 
+  describe '#drop' do
+    context 'when a valid table class calls the drop method' do
+      let(:table_name) { ExampleTable.config[:table_name] }
+      before do
+        table_manager.drop(table_name)
+        ExampleTable.create(store: store)
+      end
+      it 'should drop the table' do
+        ExampleTable.drop(store: store)
+        expect(table_manager.exists?(table_name)).to be false
+      end
+    end
+    context 'when an invalid table class calls the drop method' do
+      context 'without a table_name specified' do
+        it 'should raise an exception' do
+          expect{ ExampleTableWithoutTableName.drop(store: store) }.to raise_error(DynamoDbFramework::Table::InvalidConfigException)
+        end
+      end
+    end
+  end
+
+  describe '#exists?' do
+    context 'when a table already exists' do
+      let(:table_name) { ExampleTable.config[:table_name] }
+      before do
+        table_manager.drop(table_name)
+        ExampleTable.create(store: store)
+      end
+      it 'should return true' do
+        expect(ExampleTable.exists?(store: store)).to be true
+      end
+    end
+    context 'when a table does NOT already exist' do
+      let(:table_name) { ExampleTable.config[:table_name] }
+      before do
+        table_manager.drop(table_name)
+      end
+      it 'should return false' do
+        expect(ExampleTable.exists?(store: store)).to be false
+      end
+    end
+  end
+
   describe '#query' do
 
     let(:repository) do
@@ -183,6 +226,12 @@ RSpec.describe DynamoDbFramework::Table do
       item.timestamp = Time.now
       item.number = 1
       item
+    end
+
+    let(:table_name) { ExampleTable.config[:table_name] }
+    before do
+      table_manager.drop(table_name)
+      ExampleTable.create(store: store)
     end
 
     it 'should add, get and delete the item to the table' do

@@ -15,3 +15,18 @@ require_relative 'dynamodb_framework/dynamodb_index'
 require_relative 'dynamodb_framework/dynamodb_query'
 
 require 'date'
+
+module DynamoDbFramework
+  def self.namespace=(value)
+    @namespace = value
+  end
+  def self.namespace
+    @namespace
+  end
+  def self.namespace_delimiter=(value)
+    @namespace_delimiter = value
+  end
+  def self.namespace_delimiter
+    @namespace_delimiter ||= '.'
+  end
+end

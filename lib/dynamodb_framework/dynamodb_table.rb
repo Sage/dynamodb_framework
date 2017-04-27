@@ -9,7 +9,7 @@ module DynamoDbFramework
 
     def config
       details = {
-          table_name: self.instance_variable_get(:@table_name),
+          table_name: full_table_name,
           partition_key: self.instance_variable_get(:@partition_key)
       }
       if self.instance_variable_defined?(:@range_key)
@@ -22,6 +22,17 @@ module DynamoDbFramework
       self.instance_variable_set(:@table_name, value)
     end
 
+    def full_table_name
+      unless self.instance_variable_defined?(:@table_name)
+        raise DynamoDbFramework::Table::InvalidConfigException.new('Table name must be specified.')
+      end
+      table_name = self.instance_variable_get(:@table_name)
+      if DynamoDbFramework.namespace != nil
+        table_name = "#{DynamoDbFramework.namespace}#{DynamoDbFramework.namespace_delimiter}#{table_name}"
+      end
+      table_name
+    end
+
     def partition_key(field, type)
       self.instance_variable_set(:@partition_key, { field: field, type: type })
     end
@@ -31,11 +42,6 @@ module DynamoDbFramework
     end
 
     def create(store:, read_capacity: 25, write_capacity: 25)
-      unless self.instance_variable_defined?(:@table_name)
-        raise DynamoDbFramework::Table::InvalidConfigException.new('Table name must be specified.')
-      end
-      table_name = self.instance_variable_get(:@table_name)
-
       unless self.instance_variable_defined?(:@partition_key)
         raise DynamoDbFramework::Table::InvalidConfigException.new('Partition key must be specified.')
       end
@@ -51,20 +57,19 @@ module DynamoDbFramework
         builder.add({ name: range_key[:field], type: range_key[:type], key: :range })
       end
 
-      DynamoDbFramework::TableManager.new(store).create_table({ name: table_name, attributes: builder.attributes, read_capacity: read_capacity, write_capacity: write_capacity })
+      DynamoDbFramework::TableManager.new(store).create_table({ name: full_table_name, attributes: builder.attributes, read_capacity: read_capacity, write_capacity: write_capacity })
     end
 
     def update(store:, read_capacity:, write_capacity:)
-      unless self.instance_variable_defined?(:@table_name)
-        raise DynamoDbFramework::Table::InvalidConfigException.new('Table name must be specified.')
-      end
-      table_name = self.instance_variable_get(:@table_name)
-
-      DynamoDbFramework::TableManager.new(store).update_throughput(table_name, read_capacity, write_capacity)
+      DynamoDbFramework::TableManager.new(store).update_throughput(full_table_name, read_capacity, write_capacity)
     end
 
     def drop(store:)
-      DynamoDbFramework::TableManager.new(store).drop(config[:table_name])
+      DynamoDbFramework::TableManager.new(store).drop(full_table_name)
+    end
+
+    def exists?(store:)
+      DynamoDbFramework::TableManager.new(store).exists?(full_table_name)
     end
 
     def query(partition:)
