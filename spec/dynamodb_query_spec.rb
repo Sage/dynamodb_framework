@@ -45,11 +45,17 @@ RSpec.describe DynamoDbFramework::Query do
                           .number.gt_eq(1)
                           .and
                           .number.lt_eq(5)
+                          .and
+                          .number.exists?
+                          .and
+                          .name.contains('name')
                           .build
-      expect(string).to eq '#number >= :p0 and #number <= :p1'
+      expect(string).to eq '#number >= :p0 and #number <= :p1 and attribute_exists(#number) and contains(#name, :p2)'
       expect(params['#number']).to eq 'number'
       expect(params[':p0']).to eq 1
       expect(params[':p1']).to eq 5
+      expect(params['#name']).to eq 'name'
+      expect(params[':p2']).to eq 'name'
     end
   end
 

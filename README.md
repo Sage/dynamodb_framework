@@ -179,6 +179,12 @@ This method is called to specify the `<` operator within a query.
 ### #lt_eq(value)
 This method is called to specify the `<=` operator within a query.
 
+### #contains(value)
+This method is called to check if a field contains a value within a query.
+
+### #exists?
+This method is called to check if a field exists within a query.
+
 ### #and
 This method is called to combine conditions together in a traditional `&&` method within a query.
 
@@ -295,6 +301,12 @@ This method is called to specify the `<` operator within a query.
 
 ### #lt_eq(value)
 This method is called to specify the `<=` operator within a query.
+
+### #contains(value)
+This method is called to check if a field contains a value within a query.
+
+### #exists?
+This method is called to check if a field exists within a query.
 
 ### #and
 This method is called to combine conditions together in a traditional `&&` method within a query.

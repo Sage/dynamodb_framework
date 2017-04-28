@@ -1,6 +1,12 @@
 module DynamoDbFramework
   class Query
 
+    class InvalidQueryError < StandardError
+      def initialize(message)
+        super(message)
+      end
+    end
+
     def initialize(table_name:, partition_key:, partition_value:, index_name: nil)
       @table_name = table_name
       @partition_key = partition_key
@@ -44,6 +50,26 @@ module DynamoDbFramework
       self
     end
 
+    def contains(value)
+      field = @parts.last
+      unless field[:type] == :field
+        raise ::InvalidQueryError.new('The contains query part can only be chained to a field.')
+      end
+      @parts.pop
+      @parts << { type: :contains, field: field[:value], value: value }
+      self
+    end
+
+    def exists?
+      field = @parts.last
+      unless field[:type] == :field
+        raise ::InvalidQueryError.new('The exists? query part can only be chained to a field.')
+      end
+      @parts.pop
+      @parts << { type: :exists, field: field[:value] }
+      self
+    end
+
     def and
       @parts << { type: :and }
       self
@@ -77,6 +103,17 @@ module DynamoDbFramework
             counter = counter + 1
             @expression_string += ' ' + p[:expression].to_s + ' ' + param_name
             @expression_params[param_name] = clean_value(p[:value])
+          when :contains
+            param_name = ':p' + counter.to_s
+            counter = counter + 1
+            field_param = '#' + p[:field].to_s
+            @expression_string += ' contains(' + field_param + ', ' + param_name + ')'
+            @expression_params[field_param] = p[:field].to_s
+            @expression_params[param_name] = clean_value(p[:value])
+          when :exists
+            field_param = '#' + p[:field].to_s
+            @expression_string += ' attribute_exists(' + field_param + ')'
+            @expression_params[field_param] = p[:field].to_s
           when :and
             @expression_string += ' and'
           when :or
