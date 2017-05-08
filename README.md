@@ -20,6 +20,29 @@ Or install it yourself as:
 
 ## Usage
 
+##Global Config
+
+### #namespace
+The namespace is used to set the prefix applied to all table and index names.
+
+    DynamoDbFramework.namespace = 'uat'
+    
+> With a namespace of 'uat' and a table name of 'people', the resulting table name would be 'uat.people'
+    
+### #namespace_delimiter
+This is the delimiter used to join the namespace prefix to table/index names.
+
+> DEFAULT = '.'
+
+    DynamoDbFramework.namespace_delimiter = '-'
+    
+### #default_store
+This is used to set the default store that should be used for all connection actions that don't specify a store override.
+
+    DynamoDbFramework.default_store = store
+    
+> If no [DynamoDbFramework::Store] is manually specified then the default store will attempt to use the aws credentials from the host machines aws configuration profile.
+
 # Table
 Before you can work with any data in dynamodb you require a table definition.
 To define a table create a class and use the `DynamoDbFramework::Table` module.
@@ -51,27 +74,29 @@ This method is called create the table definition within a dynamodb account.
  - **write_capacity** [Integer] [Optional] [Default=25] This is used to specify the write capacity to provision for this table.
      
 
-    ExampleTable.create(store: store, read_capacity: 50, write_capacity: 35)
+    ExampleTable.create(read_capacity: 50, write_capacity: 35)
   
 ## #update
 This method is called to update the provisioned capacity for the table.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **read_capacity** [Integer] [Required] This is used to specify the read capacity to provision for this table.
  - **write_capacity** [Integer] [Required] This is used to specify the write capacity to provision for this table.
 
-    ExampleTable.update(store: store, read_capacity: 100, write_capacity: 50)
+
+    ExampleTable.update(read_capacity: 100, write_capacity: 50)
 
 ## #drop
 This method is called to drop the table from a dynamodb account.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
 
-    ExampleTable.drop(store: store)
+
+    ExampleTable.drop
     
     
 ## #exists?
@@ -79,21 +104,22 @@ This method is called to determine if this table exists in a dynamodb account.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used. 
+ 
 
-    ExampleTable.exists?(store: store)
+    ExampleTable.exists?
     
 ## #get_item
 This method is called to get a single item from the table by its unique key.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **partition** [object] [Required] This is used to specify the partition_key value of the item to get.
  - **range** [object] [Optional] This is used to specify the range_key value of the item to get.
   
     
-    ExampleTable.get_item(store: store, partition: uuid, range: timestamp)
+    ExampleTable.get_item(partition: uuid, range: timestamp)
 
 
 ## #put_item
@@ -101,11 +127,11 @@ This method is called to put a single item into the table.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **item** [object] [Required] This is the item to store in the table.
 
 
-    ExampleTable.put_item(store: store, item: item)
+    ExampleTable.put_item(item: item)
 
 
 ## #delete_item
@@ -113,12 +139,12 @@ This method is called to delete an item from the table.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **partition** [object] [Required] This is used to specify the partition_key value of the item.
  - **range** [object] [Optional] This is used to specify the range_key value of the item.
   
     
-    ExampleTable.delete_item(store: store, partition: uuid, range: timestamp)
+    ExampleTable.delete_item(partition: uuid, range: timestamp)
 
 
 ## #all
@@ -126,9 +152,9 @@ This method is called to return all items from the table.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
 
-    ExampleTable.all(store: store)
+    ExampleTable.all
     
 
 ## #query
@@ -148,14 +174,14 @@ The above query chain translates into:
      
 To execute the query you can then call `#execute` on the query:
 
-    query.execute(store: store)
+    query.execute
     
 ### #execute
 This method is called to execute a query.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **limit** [Integer] [Optional] This is used to specify a limit to the number of items returned by the query.
  - **count** [Boolean] [Optional] This is used to specify if the query should just return a count of results.
 
@@ -217,41 +243,44 @@ This method is called create the index definition within a dynamodb account.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **read_capacity** [Integer] [Optional] [Default=25] This is used to specify the read capacity to provision for this index.
  - **write_capacity** [Integer] [Optional] [Default=25] This is used to specify the write capacity to provision for this index.
      
 
-    ExampleIndex.create(store: store, read_capacity: 50, write_capacity: 35)
+    ExampleIndex.create(read_capacity: 50, write_capacity: 35)
   
 ## #update
 This method is called to update the provisioned capacity for the index.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **read_capacity** [Integer] [Required] This is used to specify the read capacity to provision for this index.
  - **write_capacity** [Integer] [Required] This is used to specify the write capacity to provision for this index.
 
-    ExampleIndex.update(store: store, read_capacity: 100, write_capacity: 50)
+
+    ExampleIndex.update(read_capacity: 100, write_capacity: 50)
 
 ## #drop
 This method is called to drop the current index.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
 
-    ExampleIndex.drop(store: store)
+
+    ExampleIndex.drop
   
 ## #exists?
 This method is called to determine if this index exists in a dynamodb account.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
 
-    ExampleIndex.exists?(store: store)
+
+    ExampleIndex.exists?
 
 
 ## #query
@@ -271,14 +300,14 @@ The above query chain translates into:
      
 To execute the query you can then call `#execute` on the query:
 
-    query.execute(store: store)
+    query.execute
     
 ### #execute
 This method is called to execute a query.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **limit** [Integer] [Optional] This is used to specify a limit to the number of items returned by the query.
  - **count** [Boolean] [Optional] This is used to specify if the query should just return a count of results.
 
@@ -328,10 +357,10 @@ To create or modify a DynamoDb instance you first need to create a migration scr
 		end
 
 		def apply
-			EventTrackingTable.create(store: store, read_capacity: 50, write_capacity: 35)
+			EventTrackingTable.create(read_capacity: 50, write_capacity: 35)
 		end
 		def undo		
-			EventTrackingTable.drop(store: store)		
+			EventTrackingTable.drop		
 		end
 	end
 

@@ -41,7 +41,7 @@ module DynamoDbFramework
       self.instance_variable_set(:@range_key, { field: field, type: type })
     end
 
-    def create(store:, read_capacity: 25, write_capacity: 25)
+    def create(store: DynamoDbFramework.default_store, read_capacity: 25, write_capacity: 25)
       unless self.instance_variable_defined?(:@partition_key)
         raise DynamoDbFramework::Table::InvalidConfigException.new('Partition key must be specified.')
       end
@@ -60,15 +60,15 @@ module DynamoDbFramework
       DynamoDbFramework::TableManager.new(store).create_table({ name: full_table_name, attributes: builder.attributes, read_capacity: read_capacity, write_capacity: write_capacity })
     end
 
-    def update(store:, read_capacity:, write_capacity:)
+    def update(store: DynamoDbFramework.default_store, read_capacity:, write_capacity:)
       DynamoDbFramework::TableManager.new(store).update_throughput(full_table_name, read_capacity, write_capacity)
     end
 
-    def drop(store:)
+    def drop(store: DynamoDbFramework.default_store)
       DynamoDbFramework::TableManager.new(store).drop(full_table_name)
     end
 
-    def exists?(store:)
+    def exists?(store: DynamoDbFramework.default_store)
       DynamoDbFramework::TableManager.new(store).exists?(full_table_name)
     end
 
@@ -76,19 +76,19 @@ module DynamoDbFramework
       DynamoDbFramework::Query.new(table_name: config[:table_name], partition_key: config[:partition_key][:field], partition_value: partition)
     end
 
-    def all(store:)
+    def all(store: DynamoDbFramework.default_store)
       repository = DynamoDbFramework::Repository.new(store)
       repository.table_name = config[:table_name]
       repository.all
     end
 
-    def put_item(store:, item:)
+    def put_item(store: DynamoDbFramework.default_store, item:)
       repository = DynamoDbFramework::Repository.new(store)
       repository.table_name = config[:table_name]
       repository.put(item)
     end
 
-    def get_item(store:, partition:, range: nil)
+    def get_item(store: DynamoDbFramework.default_store, partition:, range: nil)
       repository = DynamoDbFramework::Repository.new(store)
       repository.table_name = config[:table_name]
 
@@ -99,7 +99,7 @@ module DynamoDbFramework
       end
     end
 
-    def delete_item(store:, partition:, range: nil)
+    def delete_item(store: DynamoDbFramework.default_store, partition:, range: nil)
       repository = DynamoDbFramework::Repository.new(store)
       repository.table_name = config[:table_name]
 

@@ -46,7 +46,7 @@ module DynamoDbFramework
       self.instance_variable_set(:@range_key, { field: field, type: type })
     end
 
-    def create(store:, read_capacity: 25, write_capacity: 25)
+    def create(store: DynamoDbFramework.default_store, read_capacity: 25, write_capacity: 25)
       unless self.instance_variable_defined?(:@table)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
       end
@@ -83,7 +83,7 @@ module DynamoDbFramework
       table_manager.add_index(table_name, builder.attributes, index)
     end
 
-    def update(store:, read_capacity:, write_capacity:)
+    def update(store: DynamoDbFramework.default_store, read_capacity:, write_capacity:)
       unless self.instance_variable_defined?(:@table)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
       end
@@ -92,7 +92,7 @@ module DynamoDbFramework
       DynamoDbFramework::TableManager.new(store).update_index_throughput(table.config[:table_name], full_index_name, read_capacity, write_capacity)
     end
 
-    def drop(store:)
+    def drop(store: DynamoDbFramework.default_store)
       unless self.instance_variable_defined?(:@table)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
       end
@@ -102,7 +102,7 @@ module DynamoDbFramework
       DynamoDbFramework::TableManager.new(store).drop_index(table_name, full_index_name)
     end
 
-    def exists?(store:)
+    def exists?(store: DynamoDbFramework.default_store)
       unless self.instance_variable_defined?(:@table)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
       end

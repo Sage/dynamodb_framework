@@ -80,7 +80,7 @@ module DynamoDbFramework
       self
     end
 
-    def execute(store:, limit: nil, count: false)
+    def execute(store: DynamoDbFramework.default_store, limit: nil, count: false)
       build
       repository = DynamoDbFramework::Repository.new(store)
       repository.table_name = @table_name

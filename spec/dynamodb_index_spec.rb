@@ -43,6 +43,21 @@ RSpec.describe DynamoDbFramework::Index do
           expect(table_manager.has_index?(table_name, index_name)).to be true
         end
       end
+
+      context 'when no store is specified' do
+        let(:index_name) { ExampleIndex.config[:index_name] }
+        before do
+          DynamoDbFramework.default_store = store
+          if table_manager.has_index?(table_name, index_name)
+            table_manager.drop_index(table_name, index_name)
+          end
+        end
+        it 'should create the index using the default store' do
+          expect(table_manager.has_index?(table_name, index_name)).to be false
+          ExampleIndex.create
+          expect(table_manager.has_index?(table_name, index_name)).to be true
+        end
+      end
     end
     context 'when an invalid index class calls the create method' do
       context 'without a index_name specified' do
@@ -75,6 +90,15 @@ RSpec.describe DynamoDbFramework::Index do
       it 'should update the index' do
         ExampleIndex.update(store: store, read_capacity: 50, write_capacity: 50)
       end
+      context 'when no store is specified' do
+        let(:index_name) { ExampleIndex.config[:index_name] }
+        before do
+          DynamoDbFramework.default_store = store
+        end
+        it 'should update the index using the default store' do
+          ExampleIndex.update(read_capacity: 50, write_capacity: 50)
+        end
+      end
     end
     context 'when an invalid index class calls the update method' do
       context 'without an index_name specified' do
@@ -103,6 +127,15 @@ RSpec.describe DynamoDbFramework::Index do
         ExampleIndex.drop(store: store)
         expect(table_manager.has_index?(table_name, index_name)).to be false
       end
+      context 'when no store is specified' do
+        before do
+          DynamoDbFramework.default_store = store
+        end
+        it 'should drop the index using the default store' do
+          ExampleIndex.drop
+          expect(table_manager.has_index?(table_name, index_name)).to be false
+        end
+      end
     end
     context 'when an invalid index class calls the drop method' do
       context 'without an index_name specified' do
@@ -130,6 +163,14 @@ RSpec.describe DynamoDbFramework::Index do
       it 'should return true' do
         expect(ExampleIndex.exists?(store: store)).to be true
       end
+      context 'when no store is specified' do
+        before do
+          DynamoDbFramework.default_store = store
+        end
+        it 'should return true using the default store' do
+          expect(ExampleIndex.exists?).to be true
+        end
+      end
     end
     context 'when the index does NOT exist' do
       let(:index_name) { ExampleIndex.config[:index_name] }
@@ -140,6 +181,14 @@ RSpec.describe DynamoDbFramework::Index do
       end
       it 'should return false' do
         expect(ExampleIndex.exists?(store: store)).to be false
+      end
+      context 'when no store is specified' do
+        before do
+          DynamoDbFramework.default_store = store
+        end
+        it 'should return false using the default store' do
+          expect(ExampleIndex.exists?).to be false
+        end
       end
     end
   end
@@ -164,9 +213,10 @@ RSpec.describe DynamoDbFramework::Index do
     end
 
     before do
+      DynamoDbFramework::default_store = store
       table_manager.drop(table_name)
-      ExampleTable.create(store: store)
-      ExampleIndex.create(store: store)
+      ExampleTable.create
+      ExampleIndex.create
 
       create_query_item('name 1', 1)
       create_query_item('name 1', 2)
@@ -186,6 +236,16 @@ RSpec.describe DynamoDbFramework::Index do
                     .number.lt_eq(5)
                     .execute(store: store)
       expect(results.length).to eq 4
+    end
+    context 'when no store is specified' do
+      it 'should return the expected items' do
+        results = ExampleIndex.query(partition: 'name 1')
+                      .number.gt_eq(1)
+                      .and
+                      .number.lt_eq(5)
+                      .execute
+        expect(results.length).to eq 4
+      end
     end
     context 'when limit is specified' do
       it 'should return the expected items' do
