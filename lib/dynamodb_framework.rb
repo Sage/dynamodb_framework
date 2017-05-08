@@ -29,4 +29,13 @@ module DynamoDbFramework
   def self.namespace_delimiter
     @namespace_delimiter ||= '.'
   end
+  def self.default_store=(value)
+    unless value.is_a?(DynamoDbFramework::Store)
+      raise 'Invalid default store specified. Store must be of type: [DynamoDbFramework::Store]'
+    end
+    @default_store = value
+  end
+  def self.default_store
+    @default_store ||= DynamoDbFramework::Store.new
+  end
 end
