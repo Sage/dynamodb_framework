@@ -88,6 +88,18 @@ RSpec.describe DynamoDbFramework::Query do
         expect(count).to eq 4
       end
     end
+    context 'when using eq' do
+      it 'should return the right values' do
+        results = ExampleTable2.query(partition: 'name 1').number.eq(1).execute(store: store)
+        expect(results.length).to eq(1)
+      end
+    end
+    context 'when using not_eq' do
+      it 'should return the right values' do
+        results = ExampleTable2.query(partition: 'name 1').number.not_eq(1).execute(store: store)
+        expect(results.length).to eq(3)
+      end
+    end
   end
 
 end

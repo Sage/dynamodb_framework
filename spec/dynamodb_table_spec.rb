@@ -152,6 +152,7 @@ RSpec.describe DynamoDbFramework::Table do
                     .execute(store: store)
       expect(results.length).to eq 4
     end
+
     context 'when limit is specified' do
       it 'should return the expected items' do
         results = ExampleTable2.query(partition: 'name 1')

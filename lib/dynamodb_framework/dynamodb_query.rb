@@ -21,12 +21,12 @@ module DynamoDbFramework
     end
 
     def eq(value)
-      condition(expression: '==', value: value)
+      condition(expression: '=', value: value)
       self
     end
 
     def not_eq(value)
-      condition(expression: '!=', value: value)
+      condition(expression: '<>', value: value)
       self
     end
 
