@@ -68,7 +68,7 @@ module DynamoDbFramework
       if indexes != nil && indexes.length > 0
         global_indexes = []
         indexes.each do |i|
-          global_indexes << i.create(store: store, submit: false)
+          global_indexes << i.create(store: store, submit: false, read_capacity: read_capacity, write_capacity: write_capacity)
           index_partition_key = i.instance_variable_get(:@partition_key)
           unless builder.contains(name: index_partition_key[:field])
             builder.add({ name: index_partition_key[:field], type: index_partition_key[:type] })
