@@ -41,7 +41,14 @@ module DynamoDbFramework
       self.instance_variable_set(:@range_key, { field: field, type: type })
     end
 
-    def create(store: DynamoDbFramework.default_store, read_capacity: 25, write_capacity: 25)
+    def create(store: DynamoDbFramework.default_store, read_capacity: 25, write_capacity: 25, indexes: [])
+
+      #make method idempotent
+      if exists?(store: store)
+        wait_until_active(store: store)
+        return
+      end
+
       unless self.instance_variable_defined?(:@partition_key)
         raise DynamoDbFramework::Table::InvalidConfigException.new('Partition key must be specified.')
       end
@@ -57,7 +64,26 @@ module DynamoDbFramework
         builder.add({ name: range_key[:field], type: range_key[:type], key: :range })
       end
 
-      DynamoDbFramework::TableManager.new(store).create_table({ name: full_table_name, attributes: builder.attributes, read_capacity: read_capacity, write_capacity: write_capacity })
+      global_indexes = nil
+      if indexes != nil && indexes.length > 0
+        global_indexes = []
+        indexes.each do |i|
+          global_indexes << i.create(store: store, submit: false)
+          index_partition_key = i.instance_variable_get(:@partition_key)
+          unless builder.contains(name: index_partition_key[:field])
+            builder.add({ name: index_partition_key[:field], type: index_partition_key[:type] })
+          end
+          if i.instance_variable_defined?(:@range_key)
+            index_range_key = i.instance_variable_get(:@range_key)
+            unless builder.contains(name: index_range_key[:field])
+              builder.add({ name: index_range_key[:field], type: index_range_key[:type] })
+            end
+          end
+
+        end
+      end
+
+      DynamoDbFramework::TableManager.new(store).create_table({ name: full_table_name, attributes: builder.attributes, read_capacity: read_capacity, write_capacity: write_capacity, global_indexes: global_indexes })
     end
 
     def update(store: DynamoDbFramework.default_store, read_capacity:, write_capacity:)
@@ -65,11 +91,26 @@ module DynamoDbFramework
     end
 
     def drop(store: DynamoDbFramework.default_store)
+      unless exists?(store: store)
+        return
+      end
       DynamoDbFramework::TableManager.new(store).drop(full_table_name)
     end
 
     def exists?(store: DynamoDbFramework.default_store)
       DynamoDbFramework::TableManager.new(store).exists?(full_table_name)
+    end
+
+    def wait_until_active(store: DynamoDbFramework.default_store)
+      DynamoDbFramework::TableManager.new(store).wait_until_active(full_table_name)
+    end
+
+    def get_status(store: DynamoDbFramework.default_store)
+      DynamoDbFramework::TableManager.new(store).get_status(full_table_name)
+    end
+
+    def active?(store: DynamoDbFramework.default_store)
+      DynamoDbFramework::TableManager.new(store).get_status(full_table_name) == 'ACTIVE'
     end
 
     def query(partition:)

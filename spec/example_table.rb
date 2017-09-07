@@ -27,7 +27,7 @@ end
 class ExampleTableWithoutPartitionKey
   extend DynamoDbFramework::Table
 
-  table_name 'example'
+  table_name 'example.without.partition'
   range_key :timestamp, :N
 
 end
@@ -35,7 +35,7 @@ end
 class ExampleTableWithoutRangeKey
   extend DynamoDbFramework::Table
 
-  table_name 'example'
+  table_name 'example.without.range'
   partition_key :id, :S
 
 end

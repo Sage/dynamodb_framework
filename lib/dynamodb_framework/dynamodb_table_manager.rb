@@ -116,6 +116,10 @@ module DynamoDbFramework
     end
 
     def drop_index(table_name, index_name)
+      unless has_index?(table_name, index_name)
+        return
+      end
+
       table = {
           :table_name => table_name,
           :global_secondary_index_updates => [
@@ -130,6 +134,7 @@ module DynamoDbFramework
       # wait for table to be updated
       DynamoDbFramework.logger.info "[#{self.class}] -Deleting global index: #{index_name}."
       wait_until_index_dropped(table_name, index_name)
+
       DynamoDbFramework.logger.info "[#{self.class}] -Index: [#{index_name}] dropped."
     end
 
@@ -154,9 +159,13 @@ module DynamoDbFramework
       return nil
     end
 
+    def wait_timeout
+      Time.now + 900 #15 minutes
+    end
+
     def wait_until_active(table_name)
 
-      end_time = Time.now + 300
+      end_time = wait_timeout
       while Time.now < end_time do
 
         status = get_status(table_name)
@@ -168,13 +177,31 @@ module DynamoDbFramework
         sleep(5)
       end
 
-      raise "Timeout occured while waiting for table: #{table_name}, to become active."
+      raise "Timeout occurred while waiting for table: #{table_name}, to become active."
+
+    end
+
+    def wait_until_dropped(table_name)
+
+      end_time = wait_timeout
+      while Time.now < end_time do
+
+        status = get_status(table_name)
+
+        if status == nil
+          return
+        end
+
+        sleep(5)
+      end
+
+      raise "Timeout occurred while waiting for table: #{table_name}, to be dropped."
 
     end
 
     def wait_until_index_active(table_name, index_name)
 
-      end_time = Time.now + 300
+      end_time = wait_timeout
       while Time.now < end_time do
 
         status = get_index_status(table_name, index_name)
@@ -186,13 +213,13 @@ module DynamoDbFramework
         sleep(5)
       end
 
-      raise "Timeout occured while waiting for table: #{table_name}, index: #{index_name}, to become active."
+      raise "Timeout occurred while waiting for table: #{table_name}, index: #{index_name}, to become active."
 
     end
 
     def wait_until_index_dropped(table_name, index_name)
 
-      end_time = Time.now + 300
+      end_time = wait_timeout
       while Time.now < end_time do
 
         status = get_index_status(table_name, index_name)
@@ -204,7 +231,7 @@ module DynamoDbFramework
         sleep(5)
       end
 
-      raise "Timeout occured while waiting for table: #{table_name}, index: #{index_name}, to be dropped."
+      raise "Timeout occurred while waiting for table: #{table_name}, index: #{index_name}, to be dropped."
 
     end
 

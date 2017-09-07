@@ -60,5 +60,9 @@ module DynamoDbFramework
 
     end
 
+    def contains(name:)
+      @attributes.detect { |a| a[:name] == name } != nil
+    end
+
   end
 end

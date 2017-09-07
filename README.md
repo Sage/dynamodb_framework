@@ -66,15 +66,17 @@ This definition can then be used to interact with DynamoDb in relation to the ta
 
 ## #create
 This method is called create the table definition within a dynamodb account.
+> This method should operate in an idempotent manner.
 
 **Params**
 
  - **store** [DynamoDbFramework::Store] [Required] This is used to specify the Dynamodb instance/account to connect to.
  - **read_capacity** [Integer] [Optional] [Default=25] This is used to specify the read capacity to provision for this table.
  - **write_capacity** [Integer] [Optional] [Default=25] This is used to specify the write capacity to provision for this table.
+ - **indexes** [Array] [Optional] This is used to specify an array of Index definitions to be created with the table.
      
 
-    ExampleTable.create(read_capacity: 50, write_capacity: 35)
+    ExampleTable.create(read_capacity: 50, write_capacity: 35, indexes: [ExampleIndex])
   
 ## #update
 This method is called to update the provisioned capacity for the table.
@@ -90,6 +92,7 @@ This method is called to update the provisioned capacity for the table.
 
 ## #drop
 This method is called to drop the table from a dynamodb account.
+> This method should operate in an idempotent manner.
 
 **Params**
 
@@ -240,6 +243,7 @@ To define a global secondary index in dynamodb create an index definition class 
 
 ## #create
 This method is called create the index definition within a dynamodb account.
+> This method should operate in an idempotent manner.
 
 **Params**
 
@@ -264,6 +268,7 @@ This method is called to update the provisioned capacity for the index.
 
 ## #drop
 This method is called to drop the current index.
+> This method should operate in an idempotent manner.
 
 **Params**
 

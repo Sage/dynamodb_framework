@@ -22,6 +22,22 @@ RSpec.describe DynamoDbFramework::Table do
         end
       end
 
+      context 'with an index specified' do
+        let(:table_name) { ExampleTable.config[:table_name] }
+        let(:index_name) { ExampleIndex.config[:index_name] }
+        before do
+          table_manager.drop(table_name)
+          table_manager.drop_index(table_name, index_name)
+        end
+        it 'should create the table and index' do
+          expect(table_manager.exists?(table_name)).to be false
+          expect(ExampleIndex.exists?(store: store)).to be false
+          ExampleTable.create(store: store, indexes: [ExampleIndex])
+          expect(table_manager.exists?(table_name)).to be true
+          expect(ExampleIndex.exists?(store: store)).to be true
+        end
+      end
+
       context 'without a range key' do
         let(:table_name) { ExampleTableWithoutRangeKey.config[:table_name] }
         before do
@@ -30,6 +46,19 @@ RSpec.describe DynamoDbFramework::Table do
         it 'should create the table' do
           expect(table_manager.exists?(table_name)).to be false
           ExampleTableWithoutRangeKey.create(store: store)
+          expect(table_manager.exists?(table_name)).to be true
+        end
+      end
+
+      context 'when already exists' do
+        let(:table_name) { ExampleTableWithoutRangeKey.config[:table_name] }
+        before do
+          table_manager.drop(table_name)
+          ExampleTableWithoutRangeKey.create(store: store)
+        end
+        it 'should return without error' do
+          expect(table_manager.exists?(table_name)).to be true
+          expect { ExampleTableWithoutRangeKey.create(store: store) }.not_to raise_error
           expect(table_manager.exists?(table_name)).to be true
         end
       end
@@ -107,6 +136,29 @@ RSpec.describe DynamoDbFramework::Table do
       end
       it 'should return false' do
         expect(ExampleTable.exists?(store: store)).to be false
+      end
+    end
+  end
+
+  describe '#wait_until_active' do
+    context 'when a table exists' do
+      let(:table_name) { ExampleTable.config[:table_name] }
+      before do
+        table_manager.drop(table_name)
+        ExampleTable.create(store: store)
+      end
+      it 'should not raise timeout error' do
+        expect { ExampleTable.wait_until_active(store: store) }.not_to raise_error
+      end
+    end
+    context 'when a table does NOT exist' do
+      let(:table_name) { ExampleTable.config[:table_name] }
+      before do
+        table_manager.drop(table_name)
+        allow_any_instance_of(DynamoDbFramework::TableManager).to receive(:wait_timeout).and_return(Time.now)
+      end
+      it 'should raise timeout error' do
+        expect { ExampleTable.wait_until_active(store: store) }.to raise_error
       end
     end
   end
