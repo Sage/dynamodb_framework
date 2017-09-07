@@ -30,7 +30,7 @@ class ExampleIndexWithoutPartitionKey
   extend DynamoDbFramework::Index
 
   table ExampleTable
-  index_name 'example_index'
+  index_name 'example_index.without.partition'
   range_key :id, :S
 
 end
@@ -38,7 +38,7 @@ end
 class ExampleIndexWithoutRangeKey
   extend DynamoDbFramework::Index
 
-  index_name 'example_index'
+  index_name 'example_index.without.range'
   table ExampleTable
   partition_key :name, :S
 

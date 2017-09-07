@@ -46,12 +46,18 @@ module DynamoDbFramework
       self.instance_variable_set(:@range_key, { field: field, type: type })
     end
 
-    def create(store: DynamoDbFramework.default_store, read_capacity: 25, write_capacity: 25)
+    def create(store: DynamoDbFramework.default_store, read_capacity: 25, write_capacity: 25, submit: true)
       unless self.instance_variable_defined?(:@table)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
       end
       table = self.instance_variable_get(:@table)
       table_name = table.config[:table_name]
+
+      #make method idempotent
+      if exists?(store: store)
+        wait_until_active(store: store)
+        return
+      end
 
       unless self.instance_variable_defined?(:@partition_key)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Partition key must be specified.')
@@ -80,7 +86,11 @@ module DynamoDbFramework
 
       index =table_manager.create_global_index(full_index_name, partition_key[:field], range_key_field, read_capacity, write_capacity)
 
-      table_manager.add_index(table_name, builder.attributes, index)
+      if submit
+        table_manager.add_index(table_name, builder.attributes, index)
+      end
+
+      index
     end
 
     def update(store: DynamoDbFramework.default_store, read_capacity:, write_capacity:)
@@ -99,6 +109,10 @@ module DynamoDbFramework
       table = self.instance_variable_get(:@table)
       table_name = table.config[:table_name]
 
+      unless exists?(store: store)
+        return
+      end
+
       DynamoDbFramework::TableManager.new(store).drop_index(table_name, full_index_name)
     end
 
@@ -109,6 +123,15 @@ module DynamoDbFramework
       table = self.instance_variable_get(:@table)
       table_name = table.config[:table_name]
       DynamoDbFramework::TableManager.new(store).has_index?(table_name, full_index_name)
+    end
+
+    def wait_until_active(store: DynamoDbFramework.default_store)
+      unless self.instance_variable_defined?(:@table)
+        raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
+      end
+      table = self.instance_variable_get(:@table)
+      table_name = table.config[:table_name]
+      DynamoDbFramework::TableManager.new(store).wait_until_index_active(table_name, full_index_name)
     end
 
     def query(partition:)
