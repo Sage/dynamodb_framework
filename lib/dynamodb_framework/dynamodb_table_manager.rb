@@ -326,7 +326,11 @@ module DynamoDbFramework
         table[:global_secondary_indexes] = options[:global_indexes]
       end
 
-      dynamodb.client.create_table(table)
+      begin
+        dynamodb.client.create_table(table)
+      rescue Aws::DynamoDB::Errors::ResourceInUseException => e
+        DynamoDbFramework.logger.warn "[#{self.class}] - Table #{table_name} already exists!"
+      end
 
       # wait for table to be created
       DynamoDbFramework.logger.info "[#{self.class}] - Waiting for table: [#{table_name}] to be created."
