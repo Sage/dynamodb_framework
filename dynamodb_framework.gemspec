@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "dynamodb_framework"
   spec.version       = DynamoDbFramework::VERSION
   spec.authors       = ["vaughanbrittonsage"]
-  spec.email         = ["vaughanbritton@gmail.com"]
+  spec.email         = ["vaughan.britton@sage.com"]
 
   spec.summary       = 'A lightweight framework to provide managers for working with aws dynamodb (incuding local version).'
   spec.description   = 'A lightweight framework to provide managers for working with aws dynamodb (incuding local version).'
