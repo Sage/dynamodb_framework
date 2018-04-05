@@ -1,5 +1,10 @@
 # DynamoDb_Framework
 
+[![Build Status](https://travis-ci.org/Sage/dynamodb_framework.svg?branch=master)](https://travis-ci.org/Sage/dynamodb_framework)
+[![Maintainability](https://api.codeclimate.com/v1/badges/068ca2a25a441119af70/maintainability)](https://codeclimate.com/github/Sage/dynamodb_framework/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/068ca2a25a441119af70/test_coverage)](https://codeclimate.com/github/Sage/dynamodb_framework/test_coverage)
+[![Gem Version](https://badge.fury.io/rb/dynamodb_framework.svg)](https://badge.fury.io/rb/dynamodb_framework)
+
 Welcome to DynamoDb_Framework, this is a light weight framework that provides managers to help with interacting with aws dynamodb.
 
 ## Installation
