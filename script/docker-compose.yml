@@ -1,13 +1,19 @@
-dynamodb:
-  image: codeguru/dynamodb:1.0.0
-  command: -port 8000
-  ports:
-    - "8000:8000"
+version: '2.1'
 
-testrunner:
-  image: sageone/dynamodb_test_runner
-  container_name: test_runner
-  links:
-    - dynamodb
-  volumes:
-    - ../:/dynamodb_framework
+services:
+  dynamodb:
+    image: codeguru/dynamodb:1.0.0
+    command: -port 8000
+    ports:
+      - "8000:8000"
+
+  testrunner:
+    image: sageone/dynamodb_test_runner
+    container_name: test_runner
+    command: sh -c "while true; do echo 'Container is running..'; sleep 5; done"
+    environment:
+      - DYNAMODB_ENDPOINT=http://dynamodb:8000
+    depends_on:
+      - dynamodb
+    volumes:
+      - ../:/dynamodb_framework
