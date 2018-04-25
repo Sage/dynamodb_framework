@@ -31,21 +31,21 @@ Or install it yourself as:
 The namespace is used to set the prefix applied to all table and index names.
 
     DynamoDbFramework.namespace = 'uat'
-    
+
 > With a namespace of 'uat' and a table name of 'people', the resulting table name would be 'uat.people'
-    
+
 ### #namespace_delimiter
 This is the delimiter used to join the namespace prefix to table/index names.
 
 > DEFAULT = '.'
 
     DynamoDbFramework.namespace_delimiter = '-'
-    
+
 ### #default_store
 This is used to set the default store that should be used for all connection actions that don't specify a store override.
 
     DynamoDbFramework.default_store = store
-    
+
 > If no [DynamoDbFramework::Store] is manually specified then the default store will attempt to use the aws credentials from the host machines aws configuration profile.
 
 # Table
@@ -54,19 +54,19 @@ To define a table create a class and use the `DynamoDbFramework::Table` module.
 
     class ExampleTable
       extend DynamoDbFramework::Table
-    
+
       table_name 'example'
       partition_key :id, :S
       range_key :timestamp, :N
-    
+
     end
-    
+
 **attributes**
 
  - **table_name** [String] [Required] This is used to specify the name of the table.
  - **partition_key** [Symbol, Symbol] [Required] This is used to specify the item field to use for the partition key, along with the type of the field.
  - **range_key** [Symbol, Symbol] [Optional] This is used to specify the item field to use for the range key, along with the type of the field.
-  
+
 This definition can then be used to interact with DynamoDb in relation to the table.
 
 ## #create
@@ -79,10 +79,10 @@ This method is called create the table definition within a dynamodb account.
  - **read_capacity** [Integer] [Optional] [Default=25] This is used to specify the read capacity to provision for this table.
  - **write_capacity** [Integer] [Optional] [Default=25] This is used to specify the write capacity to provision for this table.
  - **indexes** [Array] [Optional] This is used to specify an array of Index definitions to be created with the table.
-     
+
 
     ExampleTable.create(read_capacity: 50, write_capacity: 35, indexes: [ExampleIndex])
-  
+
 ## #update
 This method is called to update the provisioned capacity for the table.
 
@@ -105,18 +105,18 @@ This method is called to drop the table from a dynamodb account.
 
 
     ExampleTable.drop
-    
-    
+
+
 ## #exists?
 This method is called to determine if this table exists in a dynamodb account.
 
 **Params**
 
- - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used. 
- 
+ - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
+
 
     ExampleTable.exists?
-    
+
 ## #get_item
 This method is called to get a single item from the table by its unique key.
 
@@ -125,8 +125,8 @@ This method is called to get a single item from the table by its unique key.
  - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **partition** [object] [Required] This is used to specify the partition_key value of the item to get.
  - **range** [object] [Optional] This is used to specify the range_key value of the item to get.
-  
-    
+
+
     ExampleTable.get_item(partition: uuid, range: timestamp)
 
 
@@ -150,8 +150,8 @@ This method is called to delete an item from the table.
  - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **partition** [object] [Required] This is used to specify the partition_key value of the item.
  - **range** [object] [Optional] This is used to specify the range_key value of the item.
-  
-    
+
+
     ExampleTable.delete_item(partition: uuid, range: timestamp)
 
 
@@ -163,7 +163,7 @@ This method is called to return all items from the table.
  - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
 
     ExampleTable.all
-    
+
 
 ## #query
 This method is called to query the table for a collection of items.
@@ -175,15 +175,15 @@ This method is called to query the table for a collection of items.
 The query is then built up using method chaining e.g:
 
     query = ExampleTable.query(partition: partition_value).name.eq('fred').and.age.gt(18)
-    
+
 The above query chain translates into:
 
     FROM partition_value WHERE name == 'fred' AND age > 18
-     
+
 To execute the query you can then call `#execute` on the query:
 
     query.execute
-    
+
 ### #execute
 This method is called to execute a query.
 
@@ -222,7 +222,7 @@ This method is called to check if a field exists within a query.
 ### #and
 This method is called to combine conditions together in a traditional `&&` method within a query.
 
-### #or 
+### #or
 This method is called to combine conditions together in a traditional `||` method within a query.
 
 # Index
@@ -230,14 +230,14 @@ To define a global secondary index in dynamodb create an index definition class 
 
     class ExampleIndex
       extend DynamoDbFramework::Index
-    
+
       index_name 'example_index'
       table ExampleTable
       partition_key :name, :S
       range_key :id, :S
-    
+
     end
-    
+
 **attributes**
 
  - **index_name** [String] [Required] This is used to specify the name of the index.
@@ -255,10 +255,10 @@ This method is called create the index definition within a dynamodb account.
  - **store** [DynamoDbFramework::Store] [Optional] This is used to specify the Dynamodb instance/account to connect to. If not specified the `DyanmoDbFramework.default_store` will be used.
  - **read_capacity** [Integer] [Optional] [Default=25] This is used to specify the read capacity to provision for this index.
  - **write_capacity** [Integer] [Optional] [Default=25] This is used to specify the write capacity to provision for this index.
-     
+
 
     ExampleIndex.create(read_capacity: 50, write_capacity: 35)
-  
+
 ## #update
 This method is called to update the provisioned capacity for the index.
 
@@ -281,7 +281,7 @@ This method is called to drop the current index.
 
 
     ExampleIndex.drop
-  
+
 ## #exists?
 This method is called to determine if this index exists in a dynamodb account.
 
@@ -303,15 +303,15 @@ This method is called to query the index for a collection of items.
 The query is then built up using method chaining e.g:
 
     query = ExampleIndex.query(partition: partition_value).gender.eq('male').and.age.gt(18)
-    
+
 The above query chain translates into:
 
     FROM partition_value WHERE gender == 'male' AND age > 18
-     
+
 To execute the query you can then call `#execute` on the query:
 
     query.execute
-    
+
 ### #execute
 This method is called to execute a query.
 
@@ -350,7 +350,7 @@ This method is called to check if a field exists within a query.
 ### #and
 This method is called to combine conditions together in a traditional `&&` method within a query.
 
-### #or 
+### #or
 This method is called to combine conditions together in a traditional `||` method within a query.
 
 
@@ -369,8 +369,8 @@ To create or modify a DynamoDb instance you first need to create a migration scr
 		def apply
 			EventTrackingTable.create(read_capacity: 50, write_capacity: 35)
 		end
-		def undo		
-			EventTrackingTable.drop		
+		def undo
+			EventTrackingTable.drop
 		end
 	end
 
@@ -444,7 +444,7 @@ Table with partition key, no range key and no indexes:
 	builder = DynamoDbFramework::AttributesBuilder.new
 
 	#set the partition key attribute
-	builder.add(:type, :S)		
+	builder.add(:type, :S)
 
 	#create the table
 	manager.create('event_tracking', builder.attributes, :type)
@@ -455,9 +455,9 @@ Table with partition key, range key and no indexes:
 	builder = DynamoDbFramework::AttributesBuilder.new
 
 	#set the partition key attribute
-	builder.add(:type, :S)	
+	builder.add(:type, :S)
 	#set the range key attribute
-	builder.add(:timestamp, :S)		
+	builder.add(:timestamp, :S)
 
 	#create the table
 	manager.create('event_tracking', builder.attributes, :type, :timestamp)
@@ -468,7 +468,7 @@ Table with a global index:
 	builder = DynamoDbFramework::AttributesBuilder.new
 
 	#set the partition key attribute
-	builder.add(:id, :S)		
+	builder.add(:id, :S)
 
 	global_indexes = []
 	#create the global index
@@ -480,7 +480,7 @@ Table with a global index:
 	manager.create('event_tracking', builder.attributes, :id, :nil, 20, 10, global_indexes)
 
 ### #drop
-This method is called to drop a table. 
+This method is called to drop a table.
 
 > **WARNING**: *This will drop all data stored within the table*
 
@@ -509,7 +509,7 @@ This method is called to add an index to an existing table.
  - **table_name** [String] [Required] This is the name of the index. (Must be unique within the scope of the table)
  - **attributes** [Hash] [Required] This is the document attributes used by the table keys and index keys. (Use the DynamoDbFramework::AttributesBuilder to create the attributes hash.)
  - **global_index** [Hash] [Required] This is the global index to add to the table. (Use the ***#create_global_index*** method to create the global index hash.)
- 
+
 **Example**
 
 	#build the attributes hash
@@ -521,7 +521,7 @@ This method is called to add an index to an existing table.
 
     #create the index hash
     index = manager.create_global_index('type_index', :type)
-    
+
     #add the index to the table
     manager.add_index('event_tracking', builder.attributes, index)
 
@@ -578,13 +578,13 @@ Before calling any methods from the repository the **.table_name** attribute mus
 ### #put
 This method is called to insert an item into a DynamoDb table.
 
-*Note*: 
+*Note*:
 
          [DateTime] attributes will be stored as an ISO8601 string
-         
+
          [Time] attributes will be stored as an Epoch Int
 
-The intent is that if you need to sort in dynamo by dates, then make sure you use a [Time] type. The Epoch int allows 
+The intent is that if you need to sort in dynamo by dates, then make sure you use a [Time] type. The Epoch int allows
 you to compare properly as comparing date strings are not reliable.
 
 **Params**
@@ -608,7 +608,7 @@ This method is called to delete a document from a DynamoDb table.
 
     #delete an item where the partition key (:id) is the primary key
     repository.delete({ :id => '012' })
-	
+
 	#delete an item where the partition key (:type) and the range key (:index) is the primary key
 	repository.delete({ :type => 'list', :index => 2 })
 
@@ -626,7 +626,7 @@ This method is called to get a single item from a table by its key.
 
     #get an item where the partition key is the primary key
     item = repository.get(:id, '12345')
-	
+
 	#get an item where the partition key and the range key is the primary key
 	item = repository.get(:type, 'list', :index, 2)
 
@@ -636,7 +636,7 @@ This method is called to get all items from a table.
 
 **Example**
 
- 
+
     #get all items from table
     all_items_array = repository.all
 
@@ -656,7 +656,7 @@ This method is called to execute a query against an entire table bypassing any i
 
     #scan the table and return matching items
     results = repository.scan('#type = :type and #index > :index', { '#type' => :type, ':type' => 'list', '#index' => :index, ':index' => 2 })
-    
+
     #scan the table and return matching items limited to 5 results
     results = repository.scan('#type = :type and #index > :index', { '#type' => :type, ':type' => 'list', '#index' => :index, ':index' => 2 }, 5)
 
@@ -683,7 +683,7 @@ This method is called to execute a query against either a table partition or an 
  - **expression_params** [Hash] [Required] This is a hash that contains the parameter names & values used by parameters within the query expression.
  - **index_name** [String] [Optional] This is the name of the index to run this query against.
  - **limit** [Number] [Optional] This is used to specify a limit to the number of records returned by the query.
- - **count** [Bool] [Optional] This is used to specify that the scan query should only return a count of the items that match the query. 
+ - **count** [Bool] [Optional] This is used to specify that the scan query should only return a count of the items that match the query.
 
 **Examples**
 
@@ -698,13 +698,43 @@ Query and Count from a table partition without an index:
 Query from an index partition:
 
     results = repository.query(:name, 'name 1', nil, nil, '#number > :number', { '#number' => 'number', ':number' => 2}, 'name_index')
-    
+
 > **Notes:**
 >
 > Attribute names should be specified using Expression parameter names which should start with a #
 >
 > Attribute values should be specified using Expression parameter values which should start with a :
-   
+
+## Testing
+
+To run the tests locally, we use Docker to provide both a Ruby and JRuby environment along with a reliable Redis container.
+
+### Setup Images:
+
+> This builds the Ruby docker image.
+
+```bash
+cd script
+./setup.sh
+```
+
+### Run Tests:
+
+> This executes the test suite.
+
+```bash
+cd script
+./test.sh
+```
+
+### Cleanup
+
+> This is used to clean down docker image created in the setup script.
+
+```bash
+cd script
+./cleanup.sh
+```
 
 ## Development
 

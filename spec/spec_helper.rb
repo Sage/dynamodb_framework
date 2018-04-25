@@ -14,7 +14,7 @@ require_relative '../spec/example_table'
 require_relative '../spec/example_index'
 require 'pry'
 
-DYNAMODB_STORE_ENDPOINT = 'http://localhost:8000'
+DYNAMODB_STORE_ENDPOINT = ENV.fetch('DYNAMODB_ENDPOINT', 'http://localhost:8000')
 
 Aws.config[:credentials] = Aws::Credentials.new('test_key', 'test_secret')
 Aws.config[:region] = 'eu-west-1'
