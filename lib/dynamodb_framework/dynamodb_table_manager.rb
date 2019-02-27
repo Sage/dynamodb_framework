@@ -235,7 +235,7 @@ module DynamoDbFramework
 
     end
 
-    def create(table_name, attributes, partition_key, range_key = nil, read_capacity = 20, write_capacity = 10, global_indexes = nil)
+    def create(table_name, attributes, partition_key, range_key = nil, read_capacity = 20, write_capacity = 10, global_indexes = nil, billing_mode = 'PROVISIONED')
 
       if exists?(table_name)
         return
@@ -257,11 +257,17 @@ module DynamoDbFramework
           :table_name => table_name,
           :attribute_definitions => attribute_definitions,
           :key_schema => key_schema,
-          :provisioned_throughput => {
-              :read_capacity_units => read_capacity,
-              :write_capacity_units => write_capacity
-          }
+          :billing_mode => billing_mode
       }
+
+      unless billing_mode == 'PAY_PER_REQUEST'
+        table = table.merge(
+          :provisioned_throughput => {
+            :read_capacity_units => read_capacity,
+            :write_capacity_units => write_capacity
+          }
+        )
+      end
 
       if global_indexes != nil
         table[:global_secondary_indexes] = global_indexes
@@ -316,11 +322,17 @@ module DynamoDbFramework
           :table_name => table_name,
           :attribute_definitions => attribute_definitions,
           :key_schema => key_schema,
-          :provisioned_throughput => {
-              :read_capacity_units => options[:read_capacity],
-              :write_capacity_units => options[:write_capacity]
-          }
+          :billing_mode => options[:billing_mode]
       }
+
+      unless options[:billing_mode] == 'PAY_PER_REQUEST'
+        table = table.merge(
+          :provisioned_throughput => {
+            :read_capacity_units => options[:read_capacity],
+            :write_capacity_units => options[:write_capacity]
+          }
+        )
+      end
 
       if options[:global_indexes] != nil
         table[:global_secondary_indexes] = options[:global_indexes]
@@ -338,7 +350,7 @@ module DynamoDbFramework
       DynamoDbFramework.logger.info "[#{self.class}] - Table: [#{table_name}] created."
     end
 
-    def create_global_index(name, partition_key, range_key = nil, read_capacity = 20, write_capacity = 10)
+    def create_global_index(name, partition_key, range_key = nil, read_capacity = 20, write_capacity = 10, billing_mode = 'PROVISIONED')
 
       key_schema = []
 
@@ -353,11 +365,17 @@ module DynamoDbFramework
           :projection => {
               :projection_type => :ALL
           },
-          :provisioned_throughput => {
-              :read_capacity_units => read_capacity,
-              :write_capacity_units => write_capacity,
-          }
+          :billing_mode => billing_mode
       }
+
+      unless billing_mode == ''
+        index = index.merge(
+          :provisioned_throughput => {
+            :read_capacity_units => read_capacity,
+            :write_capacity_units => write_capacity,
+          }
+        )
+      end
 
       return index
     end
