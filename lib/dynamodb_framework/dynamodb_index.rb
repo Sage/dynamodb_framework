@@ -46,7 +46,7 @@ module DynamoDbFramework
       self.instance_variable_set(:@range_key, { field: field, type: type })
     end
 
-    def create(store: DynamoDbFramework.default_store, read_capacity: 25, write_capacity: 25, submit: true)
+    def create(store: DynamoDbFramework.default_store, read_capacity: 25, write_capacity: 25, submit: true, billing_mode: 'PROVISIONED')
       unless self.instance_variable_defined?(:@table)
         raise DynamoDbFramework::Index::InvalidConfigException.new('Table must be specified.')
       end
@@ -84,10 +84,10 @@ module DynamoDbFramework
 
       range_key_field = range_key[:field] unless range_key == nil
 
-      index =table_manager.create_global_index(full_index_name, partition_key[:field], range_key_field, read_capacity, write_capacity)
+      index =table_manager.create_global_index(full_index_name, partition_key[:field], range_key_field, read_capacity, write_capacity, billing_mode)
 
       if submit
-        table_manager.add_index(table_name, builder.attributes, index)
+        table_manager.add_index(table_name, builder.attributes, index, billing_mode)
       end
 
       index

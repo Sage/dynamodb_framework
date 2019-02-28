@@ -66,7 +66,7 @@ module DynamoDbFramework
 
     end
 
-    def add_index(table_name, attributes, global_index)
+    def add_index(table_name, attributes, global_index, billing_mode = 'PROVISIONED')
 
       attribute_definitions = []
 
@@ -79,7 +79,8 @@ module DynamoDbFramework
           :attribute_definitions => attribute_definitions,
           :global_secondary_index_updates => [
               :create => global_index
-          ]
+          ],
+          :billing_mode => billing_mode
       }
 
       dynamodb.client.update_table(table)
@@ -322,7 +323,7 @@ module DynamoDbFramework
           :table_name => table_name,
           :attribute_definitions => attribute_definitions,
           :key_schema => key_schema,
-          :billing_mode => options[:billing_mode]
+          :billing_mode => options[:billing_mode] || 'PROVISIONED'
       }
 
       unless options[:billing_mode] == 'PAY_PER_REQUEST'
@@ -364,11 +365,10 @@ module DynamoDbFramework
           :key_schema => key_schema,
           :projection => {
               :projection_type => :ALL
-          },
-          :billing_mode => billing_mode
+          }
       }
 
-      unless billing_mode == ''
+      if billing_mode == 'PROVISIONED'
         index = index.merge(
           :provisioned_throughput => {
             :read_capacity_units => read_capacity,
