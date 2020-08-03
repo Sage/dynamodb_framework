@@ -117,6 +117,29 @@ RSpec.describe DynamoDbFramework::TableManager do
 
   end
 
+  it 'can update the TTL attribute' do
+
+    exists = subject.exists?('update_ttl_test')
+
+    if exists
+      subject.drop('update_ttl_test')
+    end
+
+
+    builder = DynamoDbFramework::AttributesBuilder.new
+    builder.add(:id, :S)
+    builder.add(:name, :S)
+    builder.add(:number, :N)
+    builder.add(:ttl_date, :N)
+
+    subject.create('update_ttl_test', attributes_builder.attributes, :id)
+
+    subject.update_ttl_attribute('update_ttl_test', true, 'ttl_date')
+
+    subject.drop('update_ttl_test')
+
+  end
+
   it 'can drop an existing global secondary index' do
 
     exists = subject.exists?('drop_index_test')

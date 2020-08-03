@@ -1,19 +1,23 @@
 version: '2.1'
 
 services:
-  dynamodb:
-    image: codeguru/dynamodb:1.0.0
-    command: -port 8000
+  localstack:
+    image: localstack/localstack
+    environment:
+      - SERVICES=dynamodb:4569
+      - DEFAULT_REGION=eu-west-1
+      - HOSTNAME_EXTERNAL=localstack
+      - DEBUG=1
     ports:
-      - "8000:8000"
+      - "4569:4569"
 
   testrunner:
     image: sageone/dynamodb_test_runner
     container_name: test_runner
     command: sh -c "while true; do echo 'Container is running..'; sleep 5; done"
     environment:
-      - DYNAMODB_ENDPOINT=http://dynamodb:8000
+      - DYNAMODB_ENDPOINT=http://localstack:4569
     depends_on:
-      - dynamodb
+      - localstack
     volumes:
       - ../:/dynamodb_framework

@@ -116,6 +116,25 @@ module DynamoDbFramework
       DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
     end
 
+    def update_ttl_attribute(table_name, time_to_live_status, attribute_name)
+      table = {
+          :table_name => table_name,
+          :time_to_live_specification => {
+            :enabled => time_to_live_status,
+            :attribute_name => attribute_name
+          }
+      }
+
+      DynamoDbFramework.logger.info "[#{self.class}] -Updating TTL Attribute: #{attribute_name}."
+      dynamodb.client.update_time_to_live(table)
+
+      # wait for table to be updated
+      DynamoDbFramework.logger.info "[#{self.class}] -Waiting for table: [#{table_name}] to be updated."
+      wait_until_active(table_name)
+
+      DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
+    end
+
     def drop_index(table_name, index_name)
       unless has_index?(table_name, index_name)
         return
