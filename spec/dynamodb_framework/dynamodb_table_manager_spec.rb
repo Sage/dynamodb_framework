@@ -164,7 +164,7 @@ RSpec.describe DynamoDbFramework::TableManager do
   it 'handles timeouts when dynamodb fails to respond' do
     allow(subject).to receive('wait_timeout').and_return(Time.now)
 
-    expect{subject.wait_until_ttl_changed('update_ttl_test')}.to raise_error("Timeout occurred while waiting for table: update_ttl_test, to become active.")
+    expect{subject.wait_until_ttl_changed('update_ttl_test')}.to raise_error("Timeout occurred while waiting for table: update_ttl_test, to update TTL status.")
   end
 
   it 'can drop an existing global secondary index' do
