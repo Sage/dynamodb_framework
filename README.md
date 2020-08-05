@@ -571,7 +571,7 @@ This method is called to update the ttl attribute of a table.
 
 ### #get_ttl_status
 
-This method is called to get the ttl status of a table
+This method is called to get the ttl status of a table.
 
 **Params**
 
