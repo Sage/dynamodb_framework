@@ -130,7 +130,9 @@ RSpec.describe DynamoDbFramework::TableManager do
 
     subject.create('update_ttl_test', builder.attributes, :ttl_date)
 
-    expect(subject.update_ttl_attribute('update_ttl_test', true, 'ttl_date')['time_to_live_status']).to eq('ENABLED')
+    subject.update_ttl_attribute('update_ttl_test', true, 'ttl_date')
+
+    expect(subject.get_ttl_status('update_ttl_test')['time_to_live_status']).to eq('ENABLED')
 
     subject.drop('update_ttl_test')
 

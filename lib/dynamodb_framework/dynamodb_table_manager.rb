@@ -130,10 +130,12 @@ module DynamoDbFramework
 
       # wait for table to be updated
       DynamoDbFramework.logger.info "[#{self.class}] -Waiting for table: [#{table_name}] to be updated."
-      wait_until_active(table_name)
+      wait_until_ttl_changed(table_name)
 
       DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
+    end
 
+    def get_ttl_status(table_name)
       table = {
         :table_name => table_name
       }
@@ -258,6 +260,24 @@ module DynamoDbFramework
       end
 
       raise "Timeout occurred while waiting for table: #{table_name}, index: #{index_name}, to be dropped."
+
+    end
+
+    def wait_until_ttl_changed(table_name)
+
+      end_time = wait_timeout
+      while Time.now < end_time do
+
+        status = get_ttl_status(table_name)
+
+        if status == 'ENABLED' || 'DISABLED'
+          return
+        end
+
+        sleep(5)
+      end
+
+      raise "Timeout occurred while waiting for table: #{table_name}, to become active."
 
     end
 
