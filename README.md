@@ -568,18 +568,6 @@ This method is called to update the ttl attribute of a table.
 **Example**
         #Enable TTL
     update_ttl_attribute('ttl_example', true, 'ttl_timestamp')
-
-### #get_ttl_status
-
-This method is called to get the ttl status of a table.
-
-**Params**
-
-- **table_name** [String] [Required] This is the name of the table being checked.
-
-**Example**
-        #Check TTL
-    get_ttl_status('ttl_example')
     => {
             time_to_live_status: "ENABLED",
             attribute_name: "ttl_date"

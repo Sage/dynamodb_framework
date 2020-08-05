@@ -133,9 +133,7 @@ module DynamoDbFramework
       wait_until_active(table_name)
 
       DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
-    end
 
-    def get_ttl_status(table_name)
       table = {
         :table_name => table_name
       }
