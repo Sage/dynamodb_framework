@@ -277,7 +277,7 @@ module DynamoDbFramework
         sleep(5)
       end
 
-      raise "Timeout occurred while waiting for table: #{table_name}, to become active."
+      raise "Timeout occurred while waiting for table: #{table_name}, to update TTL status."
 
     end
 
