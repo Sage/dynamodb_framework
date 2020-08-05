@@ -116,11 +116,11 @@ module DynamoDbFramework
       DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
     end
 
-    def update_ttl_attribute(table_name, time_to_live_status, attribute_name)
+    def update_ttl_attribute(table_name, enabled, attribute_name)
       table = {
           :table_name => table_name,
           :time_to_live_specification => {
-            :enabled => time_to_live_status,
+            :enabled => enabled,
             :attribute_name => attribute_name
           }
       }
@@ -133,6 +133,14 @@ module DynamoDbFramework
       wait_until_active(table_name)
 
       DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
+    end
+
+    def get_ttl_status(table_name)
+      table = {
+        :table_name => table_name
+      }
+
+      dynamodb.client.describe_time_to_live(table)['time_to_live_description']
     end
 
     def drop_index(table_name, index_name)
