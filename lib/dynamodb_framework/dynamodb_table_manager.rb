@@ -268,9 +268,9 @@ module DynamoDbFramework
       end_time = wait_timeout
       while Time.now < end_time do
 
-        status = get_ttl_status(table_name)
+        status = get_ttl_status(table_name)['time_to_live_status']
 
-        if status == 'ENABLED' || 'DISABLED'
+        if status == 'ENABLED' || status == 'DISABLED'
           return
         end
 
