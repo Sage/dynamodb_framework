@@ -116,6 +116,33 @@ module DynamoDbFramework
       DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
     end
 
+    def update_ttl_attribute(table_name, enabled, attribute_name)
+      table = {
+          :table_name => table_name,
+          :time_to_live_specification => {
+            :enabled => enabled,
+            :attribute_name => attribute_name
+          }
+      }
+
+      DynamoDbFramework.logger.info "[#{self.class}] -Updating TTL Attribute: #{attribute_name}."
+      dynamodb.client.update_time_to_live(table)
+
+      # wait for table to be updated
+      DynamoDbFramework.logger.info "[#{self.class}] -Waiting for table: [#{table_name}] to be updated."
+      wait_until_ttl_changed(table_name)
+
+      DynamoDbFramework.logger.info "[#{self.class}] -Table: [#{table_name}] updated."
+    end
+
+    def get_ttl_status(table_name)
+      table = {
+        :table_name => table_name
+      }
+
+      dynamodb.client.describe_time_to_live(table)['time_to_live_description']
+    end
+
     def drop_index(table_name, index_name)
       unless has_index?(table_name, index_name)
         return
@@ -233,6 +260,24 @@ module DynamoDbFramework
       end
 
       raise "Timeout occurred while waiting for table: #{table_name}, index: #{index_name}, to be dropped."
+
+    end
+
+    def wait_until_ttl_changed(table_name)
+
+      end_time = wait_timeout
+      while Time.now < end_time do
+
+        status = get_ttl_status(table_name)['time_to_live_status']
+
+        if status == 'ENABLED' || status == 'DISABLED'
+          return
+        end
+
+        sleep(5)
+      end
+
+      raise "Timeout occurred while waiting for table: #{table_name}, to update TTL status."
 
     end
 

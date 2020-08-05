@@ -555,6 +555,36 @@ This method is called to update the throughput required by an index.
     #update the index
     manager.update_index_throughput('event_tracking', 'type_index', 50, 20)
 
+### #update_ttl_attribute
+
+This method is called to update the ttl attribute of a table.
+
+**Params** 
+
+ - **table_name** [String] [Required] This is the name of the table the attribute belongs to.
+ - **enabled** [Boolean] [Required] This is true to turn TTL on the table or false to turn it off.
+ - **attribute_name** [String] [Required] This is the name of the attribute that is going to be used for TTL.
+
+**Example**
+        #Enable TTL
+    update_ttl_attribute('ttl_example', true, 'ttl_timestamp')
+
+### #get_ttl_status
+
+This method is called to get the ttl status of a table.
+
+**Params**
+
+- **table_name** [String] [Required] This is the name of the table being checked.
+
+**Example**
+        #Check TTL
+    get_ttl_status('ttl_example')
+    => {
+            time_to_live_status: "ENABLED",
+            attribute_name: "ttl_date"
+        }
+
 ### #has_index?(table_name, index_name)
 
 This method is called to check if an index exists on a table within the database.

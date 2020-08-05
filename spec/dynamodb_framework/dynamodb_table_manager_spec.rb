@@ -117,6 +117,56 @@ RSpec.describe DynamoDbFramework::TableManager do
 
   end
 
+  it 'can update the TTL attribute' do
+
+    exists = subject.exists?('update_ttl_test')
+
+    if exists
+      subject.drop('update_ttl_test')
+    end
+
+    builder = DynamoDbFramework::AttributesBuilder.new
+    builder.add(:ttl_date, :N)
+
+    subject.create('update_ttl_test', builder.attributes, :ttl_date)
+
+    subject.update_ttl_attribute('update_ttl_test', true, 'ttl_date')
+
+    expect(subject.get_ttl_status('update_ttl_test')['time_to_live_status']).to eq('ENABLED')
+
+    subject.drop('update_ttl_test')
+
+  end
+
+  it 'can disable the TTL attribute' do
+
+    exists = subject.exists?('update_ttl_test')
+
+    if exists
+      subject.drop('update_ttl_test')
+    end
+
+    builder = DynamoDbFramework::AttributesBuilder.new
+    builder.add(:ttl_date, :N)
+
+    subject.create('update_ttl_test', builder.attributes, :ttl_date)
+
+    subject.update_ttl_attribute('update_ttl_test', true, 'ttl_date')
+
+    subject.update_ttl_attribute('update_ttl_test', false, 'ttl_date')
+
+    expect(subject.get_ttl_status('update_ttl_test')['time_to_live_status']).to eq('DISABLED')
+
+    subject.drop('update_ttl_test')
+
+  end
+
+  it 'handles timeouts when dynamodb fails to respond' do
+    allow(subject).to receive('wait_timeout').and_return(Time.now)
+
+    expect{subject.wait_until_ttl_changed('update_ttl_test')}.to raise_error("Timeout occurred while waiting for table: update_ttl_test, to update TTL status.")
+  end
+
   it 'can drop an existing global secondary index' do
 
     exists = subject.exists?('drop_index_test')
