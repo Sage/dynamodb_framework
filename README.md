@@ -562,7 +562,7 @@ This method is called to update the ttl attribute of a table.
 **Params** 
 
  - **table_name** [String] [Required] This is the name of the table the attribute belongs to.
- - **time_to_live_status** [Boolean] [Required] This is true to turn TTL on on the table or false to turn it off.
+ - **enabled** [Boolean] [Required] This is true to turn TTL on the table or false to turn it off.
  - **attribute_name** [String] [Required] This is the name of the attribute that is going to be used for TTL.
 
 **Example**
