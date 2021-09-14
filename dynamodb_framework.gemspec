@@ -26,4 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'hash_kit', '~> 0.6'
   spec.add_dependency 'json'
   spec.add_dependency 'aws-sdk-dynamodb', '~> 1'
+  spec.add_development_dependency 'simplecov', '< 0.18.0'
 end
