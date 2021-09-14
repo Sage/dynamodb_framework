@@ -4,19 +4,19 @@ services:
   localstack:
     image: localstack/localstack
     environment:
-      - SERVICES=dynamodb:4569
+      - SERVICES=dynamodb
       - DEFAULT_REGION=eu-west-1
       - HOSTNAME_EXTERNAL=localstack
       - DEBUG=1
     ports:
-      - "4569:4569"
+      - "4566:4566"
 
   testrunner:
     image: sageone/dynamodb_test_runner
     container_name: test_runner
     command: sh -c "while true; do echo 'Container is running..'; sleep 5; done"
     environment:
-      - DYNAMODB_ENDPOINT=http://localstack:4569
+      - DYNAMODB_ENDPOINT=http://localstack:4566
     depends_on:
       - localstack
     volumes:
