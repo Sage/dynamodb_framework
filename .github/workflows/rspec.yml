@@ -1,0 +1,27 @@
+name: RSpec
+on:
+  - push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run tests
+        run: |
+          cd  script
+          ./setup.sh
+          docker-compose up -d
+          docker exec test_runner bash -c "bundle install && bundle exec rspec $*"
+
+      - name: Code Coverage
+        uses: paambaati/codeclimate-action@v2.7.5
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          prefix: '/dynamodb_framework'
+          coverageLocations: |
+            ${{github.workspace}}/coverage/.resultset.json:simplecov
+
