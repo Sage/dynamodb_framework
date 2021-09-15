@@ -21,7 +21,7 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
-          prefix: '/src'
+          prefix: '/dynamodb_framework'
           coverageLocations: |
             ${{github.workspace}}/coverage/.resultset.json:simplecov
 
