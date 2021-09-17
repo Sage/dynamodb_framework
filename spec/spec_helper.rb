@@ -5,7 +5,6 @@ end
 
 require "rubygems"
 require "bundler"
-require 'aws-sdk-dynamodb'
 require 'dynamodb_framework'
 require_relative '../spec/test_migration_script1'
 require_relative '../spec/test_migration_script2'
