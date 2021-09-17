@@ -1,3 +1,4 @@
+require 'aws-sdk-dynamodb'
 require 'hash_kit'
 require 'json'
 require_relative 'dynamodb_framework/version'
